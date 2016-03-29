@@ -1,0 +1,35 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "1dbff973-51cc-46df-a6e5-4692be114e8f++4684",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+    "1dbff973-51cc-46df-a6e5-4692be114e8f++4684" : {
+
+    },
+    "1dbff973-51cc-46df-a6e5-4692be114e8f++2392" : {
+
+    }
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "1dbff973-51cc-46df-a6e5-4692be114e8f++4684" : 0,
+    "1dbff973-51cc-46df-a6e5-4692be114e8f++2392" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "8835F0DC-5E85-4C0F-8475-AB04E9A372D3",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "1dbff973-51cc-46df-a6e5-4692be114e8f++4684" : "CaihangjiaDevelopment\/",
+    "1dbff973-51cc-46df-a6e5-4692be114e8f++2392" : "Caihangjia1"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "ZiMaCaiHang",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "ZiMaCaiHang.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "svn:\/\/192.168.3.61",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "1dbff973-51cc-46df-a6e5-4692be114e8f++2392"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "svn:\/\/192.168.3.61",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Subversion",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "1dbff973-51cc-46df-a6e5-4692be114e8f++4684"
+    }
+  ]
+}

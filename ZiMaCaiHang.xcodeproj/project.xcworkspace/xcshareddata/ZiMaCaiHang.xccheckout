@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>8835F0DC-5E85-4C0F-8475-AB04E9A372D3</string>
+	<key>IDESourceControlProjectName</key>
+	<string>ZiMaCaiHang</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>1dbff973-51cc-46df-a6e5-4692be114e8f++2392</key>
+		<string>svn://192.168.3.61</string>
+		<key>1dbff973-51cc-46df-a6e5-4692be114e8f++4684</key>
+		<string>svn://192.168.3.61/2_IOS/IOS/CaihangjiaDevelopment</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>ZiMaCaiHang.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>1dbff973-51cc-46df-a6e5-4692be114e8f++2392</key>
+		<string>../../../Caihangjia1</string>
+		<key>1dbff973-51cc-46df-a6e5-4692be114e8f++4684</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>1dbff973-51cc-46df-a6e5-4692be114e8f++4684</key>
+		<string>svn://192.168.3.61</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>svn://192.168.3.61/2_IOS/IOS/CaihangjiaDevelopment/ZiMaCaiHang.xcodeproj</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>1dbff973-51cc-46df-a6e5-4692be114e8f++4684</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>1dbff973-51cc-46df-a6e5-4692be114e8f++2392</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Caihangjia1</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>1dbff973-51cc-46df-a6e5-4692be114e8f++4684</string>
+			<key>IDESourceControlWCCName</key>
+			<string>CaihangjiaDevelopment</string>
+		</dict>
+	</array>
+</dict>
+</plist>

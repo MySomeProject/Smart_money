@@ -1,0 +1,66 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+/*h5首页*/
+.wrapper {}
+.slideBox { width:100%;}
+.slideBox .bd img { width:100%; height:auto; line-height:0}
+.slideBox .bd li { line-height:0}
+.slideBox .hd li {color:#FFF;}
+.slideBox .hd li.on { color:#FFF}
+.main_index { width:85%; margin:0 auto; text-align:center}
+.ad_top { margin-top:20px; font-size:17px; color:#e67f23} 
+.ad_top h2 { font-size:24px; color:#363636; font-family:"微软雅黑"; font-weight:normal; line-height:40px;}
+.progress {height:170px; width:220px; margin:0 auto; position:relative; margin-top:30px; font-size:16px;}
+.progress > svg { position:absolute; display: block; width:210px; height:210px; clip:rect(0px, auto, 175px, 0px); top:-10px}
+.progress .lv_text { position:absolute; color:#777777; left:0; top:16%; width:210px; text-align:center;}
+.progress .lv_text span {color:#e67e22;}
+.progress .lv_text em { font-style:normal; font-family:Arial, Helvetica, sans-serif; font-size:54px; }
+.progress .lv_text p.qt {border-top:1px #dcdcdc solid; width:150px; margin:0 auto; line-height:40px;}
+.progress .lv_more { top:86%; color:#e67f23; left:90%; height:20px; width:45px;}
+.progress .lv_more a { color:#e67f23}
+.a_btn {margin:5px auto; text-align:center; border:2px #e67f23 solid; border-radius:40px; margin-top:22px}
+.a_btn a { color:#e67f23; line-height:50px; font-size:26px}
+.save_type { width:100%; display:box; display:-webkit-box; display:-moz-box; }
+.save_type > div { box-flex:1; -webkit-box-flex:1; -moz-box-flex:1; display:box; display:-webkit-box;szisplay:-moz-box; box-pack:center; -webkit-box-pack:center; -moz-box-pack:center; box-align:center; -webkit-box-align:center; -moz-box-align:center; color:#898fa0; text-align:center}
+.save_lay b img { width:22px; height:22px; vertical-align:middle; line-height:0; padding-top:9px; float:left}
+.save_lay span { font-size:17px; vertical-align:middle; line-height:41px; float:left; padding-left:5px }
+@media screen and (min-width: 320px) and (max-width: 360px){
+.save_lay b img { width:19px; height:19px; }
+.save_lay span {font-size:15px; line-height:39px; padding-left:2px;}}
+
+
+/*首页导航浮层*/
+.ms-app-layout{position:fixed; bottom:0; left:0; width:100%; z-index:99999;}
+.ms-app{position:relative; width:100%; height:100%; opacity: 0.85;}
+.ms-app .wrap{width:100%; background-color:#f08437; overflow: hidden; display:box; display:-webkit-box; display:-moz-box;}
+.ms-app .wrap > a {box-flex:1; -webkit-box-flex:1; -moz-box-flex:1; display:box; display:-webkit-box;szisplay:-moz-box; box-pack:center; -webkit-box-pack:center; -moz-box-pack:center; box-align:center; -webkit-box-align:center; -moz-box-align:center; text-align:center; color:#FFF; font-size:18px; line-height:50px; font-family:Arial, Helvetica, sans-serif}
+.ms-app .wrap > a.br { border-right:1px #FFF solid}
+/*.ms-app .i-close-btn{width:24px;height:24px;overflow: hidden;background:url(/images/wap/app/app_colse.jpg) no-repeat 0 0;background-size:100%;position:absolute;top:0;left:0;}*/
+
+ 
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

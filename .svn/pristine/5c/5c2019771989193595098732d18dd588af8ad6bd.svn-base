@@ -1,0 +1,9 @@
+@charset "utf-8";
+/* CSS Document */
+.article{ width:100%; margin:auto;}
+.content{ width:100%; margin:auto;}
+.content h1 { width:100%; }
+
+.fonts{  padding:2% 8% 5% 8%; clear:both;}
+.content p{ font-size:12px; color:#5e5e5e; line-height:20px;}
+.content p span{ color:#e45243;}

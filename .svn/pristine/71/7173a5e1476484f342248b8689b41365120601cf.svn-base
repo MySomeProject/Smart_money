@@ -1,0 +1,585 @@
+//
+//  ZMServerAPIs.h
+//  ZMSD
+//
+//  Created by zima on 14-11-5.
+//  Copyright (c) 2014年 zima. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+#import "ZMStatusCodeList.h"
+
+
+
+
+
+//productType DANBAO（担保贷），BAOLI（消费贷），RONGZI（紫贷宝），QICHE（汽车贷）
+
+#define  ProductType
+
+//下拉刷新，获取最新的项目数据
+// flag为1表示下拉，下拉可始终传入用户当前最大的项目id为－1。
+// flag为0表示上拉，上拉传入当前用户的最小的项目id编号.
+//currentMAX_ID == －1   flag == 1
+//currentMAX_ID == 99    flag == 1
+//上拉加载更多，获取更多旧的项目数据
+//currentMIX_ID == 90   flag == 0
+
+@interface ZMServerAPIs : NSObject
+
+
+
+
++(ZMServerAPIs *)shareZMServerAPIs;
+
+//根据枚举类型返回正式字符类型
+- (NSString *)getLoanTypeNameByType:(ZMLoanType) loanType;
+//根据正式字符类型返回中文名称
+- (NSString *)getLoanCNNameByLoanTypeName:(NSString *) loanTypeName;
+
+
+//功能参数
+- (NSDictionary *)commonBean;
+
+- (void)dotestSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+#pragma mark --------------- 充值 提现 --------------------------------
+//申请提现
+- (void)getCashWithAmount:(double)amount andUserBankId:(NSInteger)userBankId branchName:(NSString *)branchName cityId:(NSInteger)cityId Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//充值
+- (void)rechargeWithAmount:(double)amount andBankCardNumber:(NSString *)bankCardNumber Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+- (void)isFirstRechargeSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+#pragma mark ---------------注册接口相关--------------------------------
+/**
+ *  注册第1步：获取验证码
+ *  @param mobileNumber
+ *  @param messageType: (RIGIST, BIND_MOBILE, BIND_EMAIL, REVISE_MOBILE, REVISE_EMAIL)
+ */
+-(void)requestVerifyCodeWithUID:(NSString *)mobileNumber withMessageType:(NSString *)messageType Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+/**
+ *  注册
+ *  @param mobileNumber
+ *  @param password
+ *  @param captcha
+ */
+//-(void)registerPhoneNumber:(NSString *)mobileNumber Password:(NSString *)password Code:(NSString *)captcha Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+-(void)registerPhoneNumber:(NSString *)mobileNumber Password:(NSString *)password Code:(NSString *)captcha  shareCode:(NSString *)sharecode Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+/*
+ *  忘记密码／找回密码
+ */
+-(void)forgotPasswordPhoneNumber:(NSString *)mobileNumber Password:(NSString *)password Code:(NSString *)captcha Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+/**
+ *  获取协议
+ *  @param agreementType
+ */
+- (void)getAgreementWithAgreementType:(NSString *)value ProductId:(NSString*)Id lendTime:(NSString *)lendTime Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+#pragma mark ---------------登录接口相关--------------------------------
+
+/**
+ *  登录
+ *
+ *  @param userId
+ *  @param password
+ */
+-(void)loginWithUID:(NSString *)userId PWD:(NSString *)password Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+/*
+ * 修改密码
+ */
+-(void)modifyPassword:(NSString *)oldPWD withNewPassword:(NSString *)newPWD Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+#pragma mark ---------------消息列表---------------------------------
+//获取消息列表
+- (void)getMessageListWithPageIndex:(NSInteger)pageIndex Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//获取消息设置
+-(void)getMessageSettingsSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//设置已读消息
+-(void)setReadedMessageWithMsgId:(NSInteger)msgId Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//设置消息设置
+-(void)setMsgSettingsWithOpenSms:(NSMutableArray *)openSmsArray andOpenInstaion:(NSMutableArray *)openInstationSmsArray andOpenEmail:(NSMutableArray *)openEmailArray Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//消息总数
+-(void)getMsgCountSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+#pragma mark ---------------日紫宝赎回--------------------------------
+//日紫宝赎回
+-(void)ransomRizibaoWithAmount:(double)amount Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//获取日紫宝信息
+-(void)getRizibaoInfoSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+#pragma mark ---------------奖励管理--------------------------------
+//我的红包
+-(void)getUserRedPackageWithCondition:(NSString *)condition Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+//邀请好友
+-(void)inviteFriendsWithMobile:(NSString *)moblieNumber andName:(NSString *)name Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+//获取邀请链接
+-(void)getInviteFriendsUrlSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+//获取我邀请的亲友
+- (void)getMyInviteFriendsWithPageIndex:(NSInteger)pageIndex Success:(void (^)(id))success failure:(void (^)(id))failure;
+//获取投资详情
+- (void)getAssetInfoWithBidUserId:(NSString *)bidUserId andFpUserId:(NSString *)fpUserId Success:(void (^)(id))success failure:(void (^)(id))failure;
+
+#pragma mark ---------------用户资金，基本，账户信息--------------------------------
+//资金信息
+-(void)getUserAssertSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+//个人基本信息
+-(void)getUserBaseInfoSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+//账户信息
+-(void)getUserAccountSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//上传头像
+-(void)uploadAvatar:(NSData *)dataFile Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+//更新用户基本信息
+-(void)updateUserBaseInfo:(NSDictionary *)baseInfo Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+
+
+#pragma mark --------------- 获取首页广告 --------------------------------
+-(void)getAdBannersSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+
+#pragma mark --------------- 首页产品，我要投资产品列表 --------------------------------
+
+//获取首页推荐项目
+-(void)recommendedItemsSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+-(void)getProductDetailWithType:(NSString *)loanType LoanId:(long)loanId success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//获（日紫宝）取详细信息
+-(void)getRiZiBaoProductDetailWithType:(NSString *)loanType LoanId:(long)loanId success:(void(^)(id response))success failure:(void(^)(id response))failure;
+//获取（紫定盈，理财产品）详细信息
+-(void)getZiDinYingProductDetailWithType:(NSString *)loanType LoanId:(long)loanId success:(void(^)(id response))success failure:(void(^)(id response))failure;
+//获取（紫贷宝，理财项目）详细信息
+-(void)getZiDaiBaoProductDetailWithType:(NSString *)loanType LoanId:(long)loanId success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//获取产品列表
+-(void)getProductListByCategoryType:(NSString *)type Page:(NSInteger)pageIndex RowCount:(NSInteger)rowCount Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//产品投资详情
+-(void)getProductInvestRecordsByCategoryType:(NSString *)type Id:(long)productId Page:(NSInteger)pageIndex RowCount:(NSInteger)pageSize Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//获取投资记录
+-(void)getAssetRecordsWithLoanType:(NSString *)loanType andLoanId:(long)loanId andPage:(NSInteger)page andPageSize:(NSInteger)pageSize Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+#pragma mark --------------- 确认投资 --------------------------------
+-(void)confirmInvestmentWith:(NSInteger)proId LoanId:(NSString *)loanId loanType:(NSString *)loanTypeName andLendAmount:(double)lendAmount Coupons:(NSString *)couponsStr success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+#pragma mark ---------------添加银行卡相关接口--------------------------------
+//添加银行卡
+- (void)addBankCardWithBankId:(NSInteger)bankId andCardNumber:(NSString *)cardNumber andBranchName:(NSString *)branchName andCityId:(NSInteger)cityId Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//获取用户银行卡列表
+- (void)getUserBankListForWithdraw:(BOOL)isWithdraw Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//解绑银行卡
+- (void)deleteUserBankWithUserBankId:(NSInteger)userBankId Success:(void (^)(id))success failure:(void (^)(id))failure;
+
+/*
+ * 获取银行名称列表
+ */
+- (void)bankNameListSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+/*
+ * 获取省份列表
+ */
+- (void)bankProvinceListSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+/*
+ * 获取省份列表
+ */
+- (void)bankCityListWithProvice:(NSString *)proviceName Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+
+#pragma mark --------------- 安全认证 --------------------------------
+//实名认证
+-(void)setRealName:(NSString *)realName identityNumber:(NSString *)idNum success:(void(^)(id response))success
+           failure:(void(^)(id response))failure;
+
+
+
+
+//手机认证,获取短信验证码
+-(void)bindMobile:(NSString *)mobileNum success:(void(^)(id response))success
+          failure:(void(^)(id response))failure;
+
+
+//验证码短信，确认反馈
+//updateBindMobilephone.action
+//String userId, String smsCode, String mobile
+-(void)confirmBindMobile:(NSString *)mobileNum verifyCode:(NSString *)smsCode success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+//修改密码
+- (void)alterUserOldPassword:(NSString *)oldPassword toNewPassword:(NSString *)newPassword Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+//验证旧手机号码获取验证码
+- (void)getIdentifyCodeByOldMobile:(NSString *)mobile Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+//验证旧绑定手机
+- (void)checkOldMobile:(NSString *)mobile andIdentifyCode:(NSString *)code Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+//验证新手机号码获取验证码
+- (void)getIdentifyCodeByNewMobile:(NSString *)mobile Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+//绑定手机
+- (void)rebindMobileWithNewMobile:(NSString *)newMobile andIdentifyCode:(NSString *)code Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//验证旧邮箱获取验证码
+- (void)getIdentifyCodeByOldEmail:(NSString *)email Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//验证新邮箱
+- (void)getIdentifyCodeByNewEmail:(NSString *)email Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//绑定邮箱
+- (void)rebindEmailWithNewEmail:(NSString *)newEmail andIdentifyCode:(NSString *)code Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//验证旧邮箱
+- (void)checkOldEmail:(NSString *)email andIdentifyCode:(NSString *)code Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//昵称认证
+//setUserNickName.action
+//String userId, String nickName
+
+-(void)setNikeName:(NSString *)nikeName success:(void(^)(id response))success
+           failure:(void(^)(id response))failure;
+
+
+
+
+#pragma mark --------------- 手势解锁和加锁设置前的验证 --------------------------------
+-(void)checkWhetherIsTheAdminUser:(NSString *)password success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//  投标的状态
+- (NSString *)getLoanStateType:(ZMLoanState)loanstate;
+//  返回投标状态的名称
+- (NSString *)getLoanStateName:(NSString *)loanStateName;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-(void)requestVerifyCodeWithUID:(NSString *)mobileNumber Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+/**
+ *  注册第1步：注册账号时，获取验证码  / 绑定手机号码
+ *
+ *  @param mobile（base64）
+ *  @param checkMobileRegisterCode.action
+ *  @param mac（base64） = B+UUID   (B表示iOS, UUID表示MAC地址)
+ *  @param success
+ *  @param failure
+ */
+-(void)checkingRegisterCode:(NSString *)smsCode phoneNumber:(NSString *)mobileNumber Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+-(void)registerPassword:(NSString *)password phoneNumber:(NSString *)mobileNumber Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+#pragma mark ---------------找回密码--------------------------------
+-(void)findPWDForRequestVerifyCodeWithMobile:(NSString *)mobileNumber Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+-(void)findPWDForCheckingRegisterCode:(NSString *)smsCode phoneNumber:(NSString *)mobileNumber Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+-(void)findPWDForResetPassword:(NSString *)password phoneNumber:(NSString *)mobileNumber autograph:(NSString *)autograph Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+
+#pragma mark --------------- 首页推荐项目 --------------------------------
+//getTopLoans.action
+//int topCount  (默认为1)
+-(void)requestTopLoanWith:(int)topCount Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+
+#pragma mark --------------- 交易／投资记录 --------------------------------
+//http://10.146.11.25:8080/mobile/getLoanLenderRecords.action?userId=6&productType=BAOLI&page=0&rows=10
+/**
+ *  请求交易／投资记录列表
+ *
+ *  @param productType DANBAO，RONGZI，BAOLI，QICHE
+ *  @param pageIndex   0
+ *  @param rowCount    默认为10
+ *  @param success
+ *  @param failure
+ 
+    getLoanLenderRecords.action
+ 
+ */
+
+-(void)requestLoanLenderListWithProductType:(NSString *)productType userId:(int)userid page:(NSInteger)pageIndex rowCount:(NSInteger)rowCount Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+///**
+// * 获取交易记录的明细列表
+// */
+//id
+// getLoanPharsesById.action
+- (void)requestPaymentRecordById:(NSInteger)loanPharsesId Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+#pragma mark --------------- 回款记录 --------------------------------
+
+///**
+// * 获取用户回款记录列表
+// */
+//userId
+//page
+//rows
+// getLoanPharses.action
+-(void)requestPaymentRecordsListByUserId:(NSInteger)userId page:(NSInteger)pageIndex rowCount:(NSInteger)rowCount loanPhaseStatus:(NSString *)loanPhaseStatus Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+#pragma mark --------------- 消息列表 --------------------------------
+
+//getMessageInfos.action
+//String userId, int count, int page
+
+//http://localhost:8080/mobile/getMessageInfos.action?userId=6&page=0&rows=10
+-(void)requestMessageInfoWithPage:(NSInteger)pageIndex rowCount:(NSInteger)rowCount Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+//setMessageRead.action
+//String id, String userId
+-(void)setMessageReadWithMessageID:(NSInteger)msgId userId:(NSInteger)userId Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+//setMessageDeleted.action
+//String ids, Integer userId
+-(void)deleteMessagesWithMessageIDs:(NSArray *)msgIds userId:(NSInteger)userId Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+
+
+
+
+#pragma mark --------------- 银行卡 --------------------------------
+/**
+ * 获取用户的银行卡列表
+ */
+//getUserBanks.action
+-(void)requestUserBankListSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+/**
+ * 获取服务器已经支持的银行bank列表  （无参数）
+ */
+//getBanks.action
+-(void)requestSupportedBankListSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+
+/**
+ * 添加card
+ */
+//user.id ＝ userId
+//cardNumber
+//bank.id
+//username (开户姓名)
+//private static String ADD_CARD_ACTION = "addUserBank.action";
+
+-(void)addNewBankCardWithUserName:(NSString *)username cardNumber:(NSString *)cardNumber bankTypeId:(NSInteger)bankTypeId Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+/**
+ * 删除银行卡
+ */
+//id  （银行卡的id  getUserBanks.action）
+//unbindUserBank.action
+-(void)deleteUserBankWithCardId:(NSInteger)cardId Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+/**
+ * 设置默认
+ */
+//userId
+//cardNumber
+//setDefaultBank.action
+-(void)bindUserBankWithBankNumber:(NSString *)cardNumber Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+
+
+
+
+
+
+#pragma mark --------------- 获取奖励积分列表 --------------------------------
+//getAwardRecords.action
+//userId
+//page
+//rows
+-(void)requestAwardRecordsListWithPage:(NSInteger)pageIndex rowCount:(NSInteger)rowCount Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+
+
+
+#pragma mark --------------- 刷新单个项目cell --------------------------------
+/**
+ *  刷新单个项目
+ *
+ *  @param loanId  项目的id
+ *  @param success
+ *  @param failure
+ */
+-(void)requestSingleProductByLoanId:(NSInteger)loanId success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+#pragma mark --------------- 四大产品列表 --------------------------------
+//getProductList.action
+//count
+//start
+//loanType
+
+//DANBAO，RONGZI，BAOLI，QICHE
+//现有接口（使用）
+-(void)requestProductListWithStart:(NSInteger)pageIndex   //start
+                             rowCount:(NSInteger)count
+                          loanType:(NSString *)loanType
+                           success:(void(^)(id response))success
+                           failure:(void(^)(id response))failure;
+
+//标准接口（弃用）
+-(void)requestProductListWithProductId:(NSInteger)productId
+                              pullFlag:(NSInteger)pullFlag
+                              loanType:(NSString *)loanType
+                             rowCount:(NSInteger)count
+                               success:(void(^)(id response))success
+                               failure:(void(^)(id response))failure;
+
+#pragma mark --------------- 产品更多详情 --------------------------------
+//getLoanInfo.action
+//loanId=5
+-(void)requestMoreLoanInfoWithLoanId:(NSInteger)loanId
+                              loanType:(NSString *)loanType
+                               success:(void(^)(id response))success
+                               failure:(void(^)(id response))failure;
+
+
+#pragma mark --------------- 单个产品投资记录 --------------------------------
+//getLoanRecordById.action
+//loanId, count
+-(void)requestRecordListOfLoanWithLoanId:(NSInteger)loanId
+                            loanType:(NSString *)loanType
+                            rowCount:(NSInteger)count
+                             success:(void(^)(id response))success
+                             failure:(void(^)(id response))failure;
+
+
+#pragma mark --------------- FTP相关接口 --------------------------------
+/*
+   获取FTP相关信息
+ */
+-(void)getFtpInfoSuccess:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+#pragma mark --------------- 充值 提现 --------------------------------
+
+/**
+ *  充值
+ *
+ *  @param NSString
+ *
+ *  @return
+ */
+-(void)rechargeMoney:(float)moneySum success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+/**
+ *  提现
+ *
+ *  @param NSString
+ *
+ *  @return
+ */
+-(void)extractionMoney:(float)moneySum toBankCardId:(NSInteger)bankCardId success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+#pragma mark --------------- 发现界面请求 --------------------------------
+//发现界面，用户反馈请求；
+-(void)SendiDearsWith:(NSString*)userIdear Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+//获取银行卡支行信息
+-(void)getBankListWithCityCode:(NSString*)Citycode CardNum:(NSString*)Cardcode Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+//发现界面，头像上传：
+-(void)SendiUserIconWithUserIcon:(UIImage*)img Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+//发现界面，关于我们，帮助中心；
+-(void)getUrlByType:(NSString*)type Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+//
+//邀请好友接口
+- (void)RequestInviteFriendsUrlSuccess:(void (^)(id))success failure:(void (^)(id))failure;
+
+#pragma mark ---------------我的奖励请求数据-------------------------------------
+
+//我的奖励
+-(void)getUserId:(NSInteger)userId Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+
+#pragma mark --------------- 软件版本检测 --------------------------------
+
+/**
+ *  检查APP软件版本信息
+ */
+-(NSString *)checkingNewestVersion:(void (^)(id response))result;
+
+/**
+ *  个人投资记录
+ */
+-(void)getMyProductInvestRecordsByCategoryType:(NSString *)type Id:(int)userId Page:(NSInteger)pageIndex RowCount:(NSInteger)pageSize loanStatus:(NSString *)loanStatus payStatus:(NSString *)payStatus  Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+/**
+ *  资金流水记录明细
+ */
+-(void)getCashRecordsByUserId:(int)userId Page:(NSInteger)pageIndex RowCount:(NSInteger)pageSize Type:(NSString*)type Success:(void(^)(id response))success failure:(void(^)(id response))failure;
+
+
+
+
+@end

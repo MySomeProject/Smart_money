@@ -1,0 +1,51 @@
+//
+//  PrefixHeader.pch
+//  ZiMaCaiHang
+//
+//  Created by zhangxh on 15-4-7.
+//  Copyright (c) 2015年 zimacaihang. All rights reserved.
+//
+
+#ifndef ZiMaCaiHang_PrefixHeader_pch
+#define ZiMaCaiHang_PrefixHeader_pch
+
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+
+#import "UIViewExt.h"
+
+#import "MacroDefinition.h"
+#import "MacroDefine.h"
+
+#import "ZMAdminUserStatusModel.h"
+
+#import "ZMNavigationController.h"
+
+#import "ZMServerAPIs.h"
+
+#import "ZMTools.h"
+
+#import "MBProgressHUD.h"
+#import "MJExtension.h"
+
+#define FileManager (@"http://192.168.3.20/")
+#endif
+
+#endif
+
+
+//企业发布==1， 苹果发布模式==0
+#define EnterpriseDistributeModel          0
+
+
+
+#ifdef DEBUG
+#define CLog(format, ...) NSLog(format, ## __VA_ARGS__)
+#else
+//#define CLog(format, ...)
+#define CLog(format, ...) NSLog(format, ## __VA_ARGS__)
+#endif
+
+
+#define LOGCMD NSLog(@"%@:%@",NSStringFromClass([self class]),NSStringFromSelector(_cmd))

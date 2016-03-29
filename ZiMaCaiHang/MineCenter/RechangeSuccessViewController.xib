@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="8191" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="8154"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RechangeSuccessViewController">
+            <connections>
+                <outlet property="investMoney" destination="2nF-sy-89n" id="iqa-CL-ePs"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Scr-7S-zb0">
+                    <rect key="frame" x="0.0" y="64" width="320" height="242"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="充值成功-成功.png" translatesAutoresizingMaskIntoConstraints="NO" id="xYr-PX-hd6">
+                            <rect key="frame" x="125" y="38" width="71" height="62"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="71" id="8B2-Ju-GnY"/>
+                                <constraint firstAttribute="height" constant="62" id="Yzh-7h-qi8"/>
+                                <constraint firstAttribute="width" secondItem="xYr-PX-hd6" secondAttribute="height" multiplier="71:62" id="bkK-mz-vMZ"/>
+                            </constraints>
+                        </imageView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="恭喜您充值成功!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3W1-fs-m6n">
+                            <rect key="frame" x="61" y="118" width="199" height="36"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="3W1-fs-m6n" secondAttribute="height" multiplier="199:36" id="FdF-pb-TOM"/>
+                                <constraint firstAttribute="height" constant="36" id="TNZ-Lv-gkX"/>
+                                <constraint firstAttribute="width" constant="199" id="a7L-TO-6qC"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                            <color key="textColor" red="0.84313725490196079" green="0.17647058823529413" blue="0.14901960784313725" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="$1000.00" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2nF-sy-89n">
+                            <rect key="frame" x="79" y="172" width="163" height="22"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="163" id="VQe-VN-qQL"/>
+                                <constraint firstAttribute="width" secondItem="2nF-sy-89n" secondAttribute="height" multiplier="163:22" id="aCd-e8-par"/>
+                                <constraint firstAttribute="height" constant="22" id="g8d-rf-Wgf"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstItem="2nF-sy-89n" firstAttribute="top" secondItem="3W1-fs-m6n" secondAttribute="bottom" constant="18" id="4cW-0i-SUd"/>
+                        <constraint firstItem="3W1-fs-m6n" firstAttribute="top" secondItem="xYr-PX-hd6" secondAttribute="bottom" constant="18" id="B0b-LZ-PHy"/>
+                        <constraint firstAttribute="centerX" secondItem="3W1-fs-m6n" secondAttribute="centerX" id="E2r-gr-JUz"/>
+                        <constraint firstAttribute="width" constant="320" id="IpC-lX-bIZ"/>
+                        <constraint firstItem="2nF-sy-89n" firstAttribute="top" secondItem="3W1-fs-m6n" secondAttribute="bottom" constant="18" id="Mcj-ap-UHJ"/>
+                        <constraint firstAttribute="centerX" secondItem="2nF-sy-89n" secondAttribute="centerX" id="Mjg-SV-Qhc"/>
+                        <constraint firstAttribute="bottom" secondItem="2nF-sy-89n" secondAttribute="bottom" constant="48" id="Rls-v0-VVg"/>
+                        <constraint firstAttribute="centerX" secondItem="xYr-PX-hd6" secondAttribute="centerX" id="aUN-FF-FA3"/>
+                        <constraint firstAttribute="width" secondItem="Scr-7S-zb0" secondAttribute="height" multiplier="160:121" id="cxy-qw-TTA"/>
+                        <constraint firstItem="xYr-PX-hd6" firstAttribute="top" secondItem="Scr-7S-zb0" secondAttribute="top" constant="38" id="fF1-Dh-RNf"/>
+                        <constraint firstAttribute="height" constant="242" id="vCa-fg-fWE"/>
+                        <constraint firstItem="3W1-fs-m6n" firstAttribute="top" secondItem="xYr-PX-hd6" secondAttribute="bottom" constant="18" id="xuA-jC-Y0t"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iMq-ko-bi0">
+                    <rect key="frame" x="47" y="330" width="226" height="38"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="iMq-ko-bi0" secondAttribute="height" multiplier="113:19" id="4gj-UC-eH6"/>
+                        <constraint firstAttribute="height" constant="38" id="9Gn-5r-gYF"/>
+                        <constraint firstAttribute="width" constant="226" id="pOO-fL-uhj"/>
+                    </constraints>
+                    <state key="normal" title="完成" backgroundImage="充值成功-完成.png">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="rechangeSuccessBtnClick:" destination="-1" eventType="touchUpInside" id="azn-WN-Ez9"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" red="0.96078431372549022" green="0.96470588235294119" blue="0.97254901960784312" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="iMq-ko-bi0" firstAttribute="top" secondItem="Scr-7S-zb0" secondAttribute="bottom" constant="24" id="4iT-MM-sB3"/>
+                <constraint firstAttribute="trailing" secondItem="Scr-7S-zb0" secondAttribute="trailing" id="7KI-Z4-Hc9"/>
+                <constraint firstItem="iMq-ko-bi0" firstAttribute="centerX" secondItem="Scr-7S-zb0" secondAttribute="centerX" id="AIF-eT-yfK"/>
+                <constraint firstItem="Scr-7S-zb0" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="Ns8-fU-wQX"/>
+                <constraint firstItem="iMq-ko-bi0" firstAttribute="top" secondItem="Scr-7S-zb0" secondAttribute="bottom" constant="24" id="bE5-Ac-JeP"/>
+                <constraint firstItem="Scr-7S-zb0" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="64" id="hkv-TR-L3h"/>
+            </constraints>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+            <point key="canvasLocation" x="184" y="122"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="充值成功-完成.png" width="282" height="51"/>
+        <image name="充值成功-成功.png" width="56" height="56"/>
+    </resources>
+</document>

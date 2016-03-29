@@ -1,0 +1,314 @@
+//
+//  MineRewardViewController.m
+//  ZiMaCaiHang
+//
+//  Created by zhangyy on 15/8/25.
+//  Copyright (c) 2015年 zimacaihang. All rights reserved.
+//
+
+#import "MineRewardViewController.h"
+#import "GTCommontHeader.h"
+#import "TableViewCell.h"
+#import "MJRefresh.h"
+
+#import "rewardModel.h"
+#import "MBProgressHUD.h"
+#import "UIImageView+WebCache.h"
+
+@interface MineRewardViewController ()<UITableViewDelegate,UITableViewDataSource>
+{
+    UITableView *_tableView;
+    UIButton *inviteRewardBtn;
+    UIButton *redRewardBtn;
+    NSMutableArray *userRewardArr;
+    NSString *namestr;
+    
+    NSInteger _page;
+    
+}
+
+@end
+
+@implementation MineRewardViewController
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    _page = 1;
+    NSString *RedStr = @"SENDREDP";
+    [self reqeuestData:_page RedStr:RedStr];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    self.view.backgroundColor = [ZMTools ColorWith16Hexadecimal:@"f8f8f8"];
+    
+    userRewardArr = [[NSMutableArray alloc] init];
+    for (UIView* view in self.view.subviews){
+        view.frame = GetFramByXib(view.frame);
+        for (UIView* childview in view.subviews){
+            childview.frame = GetFramByXib(childview.frame);
+            for (UIView* childview1 in childview.subviews){
+                childview1.frame = GetFramByXib(childview1.frame);
+            }
+        }
+    }
+    if (userRewardArr.count > 0) {
+        [userRewardArr removeAllObjects];
+    }
+    
+    _userNameLabel.font = [UIFont systemFontOfSize:GTFixHeightFlaot(17)];
+    _redNumberLabel.font = [UIFont systemFontOfSize:GTFixHeightFlaot(28)];
+    _handGood.font = [UIFont systemFontOfSize:GTFixHeightFlaot(28)];
+    _redLabel.font = [UIFont systemFontOfSize:GTFixHeightFlaot(14)];
+    _handLabel.font = [UIFont systemFontOfSize:GTFixHeightFlaot(14)];
+    _allRedMoney.font = [UIFont systemFontOfSize:GTFixHeightFlaot(38)];
+    
+    [self createTableView];
+    [self createNavigationItem];
+
+    [self getUserName];
+    NSArray *familyNames = [UIFont familyNames];
+    for( NSString *familyName in familyNames ){
+        printf( "Family: %s \n", [familyName UTF8String] );
+        NSArray *fontNames = [UIFont fontNamesForFamilyName:familyName];
+        for( NSString *fontName in fontNames ){
+            printf( "\tFont: %s \n", [fontName UTF8String] );
+        }
+    }
+    
+}
+
+-(void)getUserName
+{
+    namestr = [ZMAdminUserStatusModel shareAdminUserStatusModel].adminuserBaseInfo.realname;
+    NSString *imagePath = [ZMAdminUserStatusModel shareAdminUserStatusModel].adminuserBaseInfo.avartar;
+    
+    NSURL *imageUrl = [NSURL URLWithString:imagePath];
+    
+    [self.headerImage.layer setCornerRadius:CGRectGetHeight([self.headerImage bounds]) / 2];
+    self.headerImage.layer.masksToBounds = YES;
+    [_userNameLabel setText:[NSString stringWithFormat:@"%@共收到",namestr]];
+//    CLog(@"%@",imagePath);
+    [_headerImage sd_setImageWithURL:imageUrl placeholderImage:[UIImage imageNamed:@"touxian"]];
+    
+}
+-(void)createNavigationItem
+{
+    redRewardBtn = [[UIButton alloc] initWithFrame:CGRectMake(WIDTH_OF_SCREEN/320*100, 5, WIDTH_OF_SCREEN/320*70, 30)];
+    [redRewardBtn setTitle:@"红包奖励" forState:UIControlStateNormal];
+    [redRewardBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:GTFixHeightFlaot(16)]];
+    [redRewardBtn addTarget:self action:@selector(redRewardBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    redRewardBtn.tag = 1000;
+    redRewardBtn.selected = YES;
+    
+    inviteRewardBtn = [[UIButton alloc] initWithFrame:CGRectMake(WIDTH_OF_SCREEN/320*190, 5, WIDTH_OF_SCREEN/320*70, 30)];
+    [inviteRewardBtn setTitle:@"邀请奖励" forState:UIControlStateNormal];
+    [inviteRewardBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:GTFixHeightFlaot(15)]];
+    [inviteRewardBtn addTarget:self action:@selector(inviteRewardBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    inviteRewardBtn.tag = 1001;
+    
+    UIView *smallView = [[UIView alloc] initWithFrame:CGRectMake(WIDTH_OF_SCREEN/320*179, 10, 1, 20)];
+    smallView.backgroundColor = [UIColor whiteColor];
+    
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 30, WIDTH_OF_SCREEN, 44)];
+    
+    [view addSubview:redRewardBtn];
+    [view addSubview:inviteRewardBtn];
+    [view addSubview:smallView];
+    
+    UIBarButtonItem *barBtn=[[UIBarButtonItem alloc]initWithCustomView:view];
+    self.navigationItem.rightBarButtonItem = barBtn;
+    
+}
+
+-(void)redRewardBtnClick
+{
+    
+    _userNameLabel.text = [NSString stringWithFormat:@"%@共收到",namestr];
+    [redRewardBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:GTFixHeightFlaot(16)]];
+    [inviteRewardBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:GTFixHeightFlaot(15)]];
+    _redNumberLabel.hidden = NO;
+    _handGood.hidden = NO;
+    _handLabel.hidden = NO;
+    _redLabel.hidden = NO;
+    redRewardBtn.selected = YES;
+    inviteRewardBtn.selected = NO;
+    
+    if (HEIGHT_OF_SCREEN == 480) {
+        _userNameLabel.frame = CGRectMake(0, HEIGHT_OF_SCREEN/568*137, WIDTH_OF_SCREEN, HEIGHT_OF_SCREEN/568*20);
+        _allRedMoney.frame = CGRectMake(0, HEIGHT_OF_SCREEN/568*168, WIDTH_OF_SCREEN, HEIGHT_OF_SCREEN/568*40);
+    }else {
+    _userNameLabel.frame = CGRectMake(0, HEIGHT_OF_SCREEN/568*115, WIDTH_OF_SCREEN, HEIGHT_OF_SCREEN/568*20);
+    _allRedMoney.frame = CGRectMake(0, HEIGHT_OF_SCREEN/568*135, WIDTH_OF_SCREEN, HEIGHT_OF_SCREEN/568*40);
+    }
+    
+    NSString *RedStr = @"SENDREDP";
+    [self reqeuestData:_page RedStr:RedStr];
+}
+
+-(void)inviteRewardBtnClick
+{
+    
+    _userNameLabel.text = @"奖励总额";
+    [redRewardBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:GTFixHeightFlaot(15)]];
+    [inviteRewardBtn.titleLabel setFont:[UIFont boldSystemFontOfSize:GTFixHeightFlaot(16)]];
+    _redNumberLabel.hidden = YES;
+    _handGood.hidden = YES;
+    _redLabel.hidden = YES;
+    _handLabel.hidden = YES;
+    inviteRewardBtn.selected = YES;
+    redRewardBtn.selected = NO;
+//    _userNameLabel.font = [UIFont boldSystemFontOfSize:15];
+    if (HEIGHT_OF_SCREEN == 480) {
+        _userNameLabel.frame = CGRectMake(0, HEIGHT_OF_SCREEN/568*155, WIDTH_OF_SCREEN, HEIGHT_OF_SCREEN/568*20);
+        _allRedMoney.frame = CGRectMake(0, HEIGHT_OF_SCREEN/568*190, WIDTH_OF_SCREEN, HEIGHT_OF_SCREEN/568*40);
+    }else {
+    _userNameLabel.frame = CGRectMake(0, HEIGHT_OF_SCREEN/568*133, WIDTH_OF_SCREEN, HEIGHT_OF_SCREEN/568*20);
+    _allRedMoney.frame = CGRectMake(0, HEIGHT_OF_SCREEN/568*168, WIDTH_OF_SCREEN, HEIGHT_OF_SCREEN/568*40);
+    }
+    
+    NSString *RedStr = @"SENDMONEY";
+   
+    [self reqeuestData:_page RedStr:RedStr];
+    
+}
+
+#pragma mark - 网络请求
+- (void)reqeuestData:(NSInteger)page RedStr:(NSString *)RedStr
+{
+    MBProgressHUD *HUDjz = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [HUDjz setLabelText:@"加载ing..."];
+    
+
+    NSString * loginKey = [[ZMAdminUserStatusModel shareAdminUserStatusModel] getLoginKey];
+    
+    [[ZMServerAPIs shareZMServerAPIs] getUserLoginKey:loginKey Page:1 Rows:20 ActiveType:RedStr Success:^(id response) {
+        
+        CLog(@"%@",response);
+        NSDictionary *dict = (NSDictionary *)response;
+        
+
+        userRewardArr = dict[@"userReward"];
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [HUDjz hide:YES afterDelay:0.5];
+            self.redNumberLabel.text = [NSString stringWithFormat:@"%d",[dict[@"totalNum"] intValue]];
+            self.allRedMoney.text = [NSString stringWithFormat:@"%.2f",[dict[@"totalAmount"] floatValue]];
+            self.handGood.text = [NSString stringWithFormat:@"%d",[dict[@"bestNum"] intValue]];
+            [_tableView reloadData];
+
+        });
+
+        
+    } failure:^(id response){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [HUDjz setLabelText:@"请检查网络"];
+            [HUDjz hide:YES afterDelay:1.0];
+        });
+    }];
+}
+
+-(void)createTableView{
+    
+    
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, WIDTH_OF_SCREEN, HEIGHT_OF_SCREEN-64) style:UITableViewStylePlain];
+    
+    _tableView.backgroundColor = [ZMTools ColorWith16Hexadecimal:@"f8f8f8"];
+    _tableView.tableHeaderView = self.bgView;
+    _tableView.delegate = self;
+    _tableView.dataSource = self;
+    
+    [self.view addSubview:_tableView];
+    
+}
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return userRewardArr.count;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    return 0.1;
+}
+
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    TableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"qqq"];
+    
+        if (!cell) {
+            cell = [[[NSBundle mainBundle]loadNibNamed:@"TableViewCell" owner:nil options:nil]lastObject];
+            
+            for (UIView* view in cell.contentView.subviews) {
+                view.frame = GetFramByXib(view.frame);
+                for (UIView* subView in view.subviews) {
+                    subView.frame = GetFramByXib(subView.frame);
+                }
+            }
+            
+        }
+    
+    if (userRewardArr.count > 0) {
+    
+        NSDictionary *dict = [userRewardArr objectAtIndex:indexPath.row];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            cell.typeNameLable.font = [UIFont fontWithName:@"MicrosoftYaHei" size:GTFixHeightFlaot(15)];
+            cell.dateLabel.font = [UIFont fontWithName:@"MicrosoftYaHei" size:GTFixHeightFlaot(13)];
+            cell.rmbLabel.font = [UIFont fontWithName:@"MicrosoftYaHei" size:GTFixHeightFlaot(13)];
+            
+            cell.typeNameLable.text = [NSString stringWithFormat:@"%@",dict[@"title"]];
+            [cell.typeNameLable sizeToFit];//自适应label的宽度
+            
+            cell.dateLabel.text = [NSString stringWithFormat:@"%@",dict[@"sendDate"]];
+            cell.rmbLabel.text = [NSString stringWithFormat:@"%@",dict[@"rewardNum"]];
+            cell.smaImage.frame = CGRectMake(cell.typeNameLable.origin.x+cell.typeNameLable.size.width, HEIGHT_OF_SCREEN/568*14, HEIGHT_OF_SCREEN/568*13, HEIGHT_OF_SCREEN/568*13);
+        });
+    }
+    
+    if (inviteRewardBtn.isSelected) {
+        
+//        cell.typeNameLable.text = @"邀请张三投资";
+        cell.smaImage.hidden = YES;
+        
+    }else
+    {
+//        cell.typeNameLable.text = @"晓琳注册红包";
+        cell.smaImage.hidden = NO;
+    
+    }
+    
+    
+    cell.selectionStyle=UITableViewCellSelectionStyleNone;
+    
+    
+    return cell;
+    
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return HEIGHT_OF_SCREEN/568*62;
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

@@ -1,0 +1,30 @@
+//
+//  RechangeSuccessViewController.m
+//  ZiMaCaiHang
+//
+//  Created by zhangyy on 15/7/31.
+//  Copyright (c) 2015年 zimacaihang. All rights reserved.
+//
+
+#import "RechangeSuccessViewController.h"
+
+@interface RechangeSuccessViewController ()
+
+@end
+
+@implementation RechangeSuccessViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+}
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    self.investMoney.text = [NSString stringWithFormat:@"￥%@",self.rechangeMoney];
+}
+- (IBAction)rechangeSuccessBtnClick:(id)sender {
+    [self.navigationController popToRootViewControllerAnimated:YES];
+}
+
+@end

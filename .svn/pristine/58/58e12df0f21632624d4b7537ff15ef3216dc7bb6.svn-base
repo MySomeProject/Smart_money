@@ -1,0 +1,113 @@
+//
+//  CashHistoryCell.m
+//  ZiMaCaiHang
+//
+//  Created by zhangyy on 15/6/29.
+//  Copyright (c) 2015年 zimacaihang. All rights reserved.
+//
+
+#import "CashHistoryCell.h"
+#import "AppDelegate.h"
+#import "CashHistoryModel.h"
+@implementation CashHistoryCell
+
+- (void)awakeFromNib {
+    // Initialization code
+    [AppDelegate storyBoradAutoLay:self];
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+- (void)setModel:(CashHistoryModel *)model
+{
+    _model = model;
+    self.rechargeType.text = model.rechargeType;
+    if([model.rechargeType isEqualToString:@"回款"])
+    {
+        self.transAmout.textColor = [UIColor redColor];
+        self.transAmout.text = [NSString stringWithFormat:@"+%.2f",model.transAmout];
+        
+        if([model.capitalStatus isEqualToString: @"UNPAID"])
+        {
+            self.capitalStatus.text = @"未付款";
+        }
+        if([model.capitalStatus isEqualToString: @"SUCCESS"])
+        {
+            self.capitalStatus.text = @"付款成功";
+        }
+        if([model.capitalStatus isEqualToString: @"FAILED"])
+        {
+            self.capitalStatus.text = @"付款失败";
+        }
+        if([model.capitalStatus isEqualToString: @"OVERDUE"])
+        {
+            self.capitalStatus.text = @"逾期还款";
+        }
+        if([model.capitalStatus isEqualToString: @"ADVANCE_REPAID"])
+        {
+            self.capitalStatus.text = @"提前还款";
+        }
+        
+        if([model.capitalStatus isEqualToString: @"ALREADY_GUARANTED"])
+        {
+            self.capitalStatus.text = @"风险金垫付";
+        }
+        
+        if([model.capitalStatus isEqualToString: @"PART_GUARANTED"])
+        {
+            self.capitalStatus.text = @"部分风险金垫付";
+        }
+
+    }
+    else if([model.rechargeType isEqualToString:@"充值"])
+    {
+        self.transAmout.textColor = [UIColor redColor];
+        self.transAmout.text = [NSString stringWithFormat:@"+%.2f",model.transAmout];
+        if([model.capitalStatus isEqualToString: @"SUCCESS"])
+        {
+            self.capitalStatus.text = @"充值成功";
+        }
+        else if([model.capitalStatus isEqualToString: @"FAILURE"])
+        {
+            self.capitalStatus.text = @"充值失败";
+        }
+        else if([model.capitalStatus isEqualToString: @"REFUND"])
+        {
+            self.capitalStatus.text = @"银行退款";
+        }
+
+        else
+        {
+            self.capitalStatus.text = @"充值进行中";
+        }
+    }
+    else if([model.rechargeType isEqualToString:@"提现"])
+    {
+        self.transAmout.textColor = UIColorFromRGB(0x70A036);
+        self.transAmout.text = [NSString stringWithFormat:@"-%.2f",model.transAmout];
+        if([model.capitalStatus isEqualToString: @"SUCCESS"])
+        {
+            self.capitalStatus.text = @"提现成功";
+        }
+        else if([model.capitalStatus isEqualToString: @"FAILURE"])
+        {
+            self.capitalStatus.text = @"提现失败";
+        }
+        else if([model.capitalStatus isEqualToString: @"REFUND"])
+        {
+            self.capitalStatus.text = @"银行退款";
+        }
+        else
+        {
+            self.capitalStatus.text = @"提现进行中";
+        }
+
+    }
+    self.create_time.text = model.create_time;
+}
+
+@end

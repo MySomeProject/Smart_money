@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>财月盈详情</title>
+<link rel="stylesheet" href="resetcyy.css">
+<link rel="stylesheet" href="basecyy.css">
+<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,initial-scale=1.0">
+<meta content="yes" name="apple-mobile-web-app-capable">
+<meta content="black" name="apple-mobile-web-app-status-bar-style">
+<meta content="telephone=no" name="format-detection">
+
+</head>
+
+<body>
+<article class="article">
+	<div class="content">
+    	<h1><img src="cont.jpg" width="100%"/></h1>
+		<div class="fonts">
+        <p>“财月盈”是一款30天短期高收益低风险的理财产品，平台为加入本产品的投资人资金优先投标于优质借款标的。“财月盈”低至100元起购，可享受30天年化8.6%的高收益回报。</p>
+        </div>
+    </div>
+    
+    <div class="content">
+    	<h1><img src="cont2.jpg" width="100%"/></h1>
+        <div class="fonts">
+        <p>“财月盈”在30天到期后一次性还本付息，返还至财行家账户余额，可直接提现；</p>
+        </div>
+    </div>
+    <div class="content">
+    	<h1><img src="cont6.jpg" width="100%"/></h1>
+        <div class="fonts">
+        <p>第一还款来源：借款人的到期还款金额；</p>
+        <p>第二还款来源：财行家设立了风险备用金账户，会从自身服务费中提取一定比例的金额，存入此账户。此账户专款专用于在融资方逾期不还款的情况下，进行先行垫付，保障投资人的投资安全。</p>
+        <p>第三还款来源：财行家平台所有融资项目均由合作的金融机构提供保障，当项目出现风险时将按照约定进行债权回购，并先行赔付投资人的本金及利息，保障投资人全额本息兑付。</p>
+        </div>
+    </div>
+    <div class="content">
+    	<h1><img src="cont3.jpg" width="100%"/></h1>
+        <div class="fonts">
+        <p>请于“财月盈”投资期内投资参与，30天年化收益率8.6%，手续费全免，购买当日计息</p>
+        </div>
+    </div>
+    <div class="content">
+    	<h1><img src="cont4.jpg" width="100%"/></h1>
+        <div class="fonts">
+        <p><img src="contents.jpg" width="100%" /></p>
+        </div>
+    </div>
+    <div class="content">
+    	<h1><img src="cont7.jpg" width="100%"/></h1>
+        <div class="fonts">
+        <p>收益=投资金额*8.6%*30天/365天</p>
+        <p>假如您投资10,000元，则30天后可获得的收益为：</p>
+        <p><span>10000*8.6%*30天/365天=70.68元</span></p>
+        </div>
+    </div>
+</article>
+
+</body> 
+</html>

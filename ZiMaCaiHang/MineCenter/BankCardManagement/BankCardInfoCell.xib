@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6751" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="130" id="XMp-Y9-OpE" customClass="BankCardInfoCell">
+            <rect key="frame" x="0.0" y="0.0" width="491" height="130"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="XMp-Y9-OpE" id="kkF-Ip-Znl">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="GF4-er-t0H" userLabel="topLine">
+                        <rect key="frame" x="0.0" y="14" width="414" height="0.5"/>
+                        <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="deviceRGB"/>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Hw-x8-tvu" userLabel="bottomLine">
+                        <rect key="frame" x="28" y="93" width="437" height="0.5"/>
+                        <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="deviceRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="0.5" id="0Ri-8X-J2E"/>
+                        </constraints>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bankIcon.png" translatesAutoresizingMaskIntoConstraints="NO" id="GIR-FN-uEp" userLabel="leftIcon">
+                        <rect key="frame" x="28" y="42" width="45" height="45"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="45" id="ZEW-b7-Tke"/>
+                            <constraint firstAttribute="width" secondItem="GIR-FN-uEp" secondAttribute="height" multiplier="1:1" id="vb7-Br-y4B"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="工商银行" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gjG-AZ-Sap">
+                        <rect key="frame" x="97" y="38" width="368" height="26"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="尾号9811" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eBx-XI-Q9W">
+                        <rect key="frame" x="97" y="67" width="368" height="24"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="duigou.png" translatesAutoresizingMaskIntoConstraints="NO" id="x33-pD-0QP">
+                        <rect key="frame" x="439" y="53" width="30" height="24"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="30" id="Xfz-kq-g2W"/>
+                            <constraint firstAttribute="height" constant="24" id="ziP-i7-TeZ"/>
+                        </constraints>
+                    </imageView>
+                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8bZ-sx-uM2" userLabel="bottomLongLine">
+                        <rect key="frame" x="0.0" y="78.5" width="491" height="0.5"/>
+                        <color key="backgroundColor" red="0.86666666670000003" green="0.86666666670000003" blue="0.86666666670000003" alpha="1" colorSpace="deviceRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="1" id="RQm-B2-2od"/>
+                        </constraints>
+                    </imageView>
+                </subviews>
+                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                <constraints>
+                    <constraint firstItem="gjG-AZ-Sap" firstAttribute="leading" secondItem="GIR-FN-uEp" secondAttribute="trailing" constant="24" id="0LK-CV-6Zl"/>
+                    <constraint firstAttribute="centerY" secondItem="gjG-AZ-Sap" secondAttribute="centerY" constant="14" id="0YL-de-FUV"/>
+                    <constraint firstItem="GF4-er-t0H" firstAttribute="top" secondItem="kkF-Ip-Znl" secondAttribute="top" id="32J-QO-wr7"/>
+                    <constraint firstItem="x33-pD-0QP" firstAttribute="centerY" secondItem="GIR-FN-uEp" secondAttribute="centerY" id="8wQ-TG-87w"/>
+                    <constraint firstAttribute="centerY" secondItem="eBx-XI-Q9W" secondAttribute="centerY" constant="-14" id="ER6-IF-XGD"/>
+                    <constraint firstItem="8bZ-sx-uM2" firstAttribute="leading" secondItem="kkF-Ip-Znl" secondAttribute="leadingMargin" constant="-8" id="Q0B-Fe-Gfe"/>
+                    <constraint firstItem="1Hw-x8-tvu" firstAttribute="leading" secondItem="GIR-FN-uEp" secondAttribute="leading" id="SRH-NO-HaT"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="gjG-AZ-Sap" secondAttribute="trailing" constant="18" id="VCQ-uk-3yN"/>
+                    <constraint firstAttribute="trailing" secondItem="GF4-er-t0H" secondAttribute="trailing" id="VtW-xU-Pwj"/>
+                    <constraint firstItem="GF4-er-t0H" firstAttribute="leading" secondItem="kkF-Ip-Znl" secondAttribute="leading" id="W7d-be-eO2"/>
+                    <constraint firstAttribute="bottom" secondItem="1Hw-x8-tvu" secondAttribute="bottom" constant="1" id="W7t-2n-glM"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="8bZ-sx-uM2" secondAttribute="trailing" constant="-8" id="XrV-4e-0Gd"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="x33-pD-0QP" secondAttribute="trailing" constant="14" id="bA0-c7-yhK"/>
+                    <constraint firstAttribute="centerY" secondItem="GIR-FN-uEp" secondAttribute="centerY" constant="0.5" id="bgl-My-8TK"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="eBx-XI-Q9W" secondAttribute="trailing" constant="18" id="d3M-BR-DU8"/>
+                    <constraint firstItem="eBx-XI-Q9W" firstAttribute="leading" secondItem="GIR-FN-uEp" secondAttribute="trailing" constant="24" id="vW9-Oy-Bca"/>
+                    <constraint firstItem="1Hw-x8-tvu" firstAttribute="trailing" secondItem="eBx-XI-Q9W" secondAttribute="trailing" id="wmF-Tn-w7d"/>
+                    <constraint firstItem="GIR-FN-uEp" firstAttribute="leading" secondItem="kkF-Ip-Znl" secondAttribute="leadingMargin" constant="20" id="z6O-3s-z01"/>
+                    <constraint firstItem="8bZ-sx-uM2" firstAttribute="bottom" secondItem="1Hw-x8-tvu" secondAttribute="bottom" constant="-14.5" id="z8v-W5-asy"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="bankNameLabel" destination="gjG-AZ-Sap" id="Y5G-x5-uMz"/>
+                <outlet property="bankNumberLabel" destination="eBx-XI-Q9W" id="iZO-UN-tPt"/>
+                <outlet property="bottomLine" destination="1Hw-x8-tvu" id="Yo0-zQ-Y3N"/>
+                <outlet property="leftBankTypeLogo" destination="GIR-FN-uEp" id="sGr-xz-3dO"/>
+                <outlet property="selectedImage" destination="x33-pD-0QP" id="JI0-gB-SJt"/>
+                <outlet property="topLine" destination="GF4-er-t0H" id="Dnc-rH-cMF"/>
+            </connections>
+            <point key="canvasLocation" x="224.5" y="363"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="bankIcon.png" width="80" height="80"/>
+        <image name="duigou.png" width="60" height="44"/>
+    </resources>
+</document>

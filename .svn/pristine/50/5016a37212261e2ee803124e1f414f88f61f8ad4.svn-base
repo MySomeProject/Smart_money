@@ -1,0 +1,18 @@
+//
+//  ZMRealNameSettingViewController.h
+//  ZMSD
+//
+//  Created by zima on 14-12-24.
+//  Copyright (c) 2014年 zima. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+#include "BaseViewController.h"
+typedef void(^RealNameAuthenticationBlock)(BOOL isAuthentication);
+
+@interface ZMRealNameSettingViewController : BaseViewController<MBProgressHUDDelegate> //UITableViewController
+@property (strong, nonatomic) UITableView * tableView;
+@property (nonatomic) BOOL isAlreadyAuthen;
+
+@property(copy,nonatomic) RealNameAuthenticationBlock realNameAuthenticationBlock;
+@end

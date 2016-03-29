@@ -1,0 +1,288 @@
+//
+//  sendRedPackController.m
+//  ZiMaCaiHang
+//
+//  Created by zhangyy on 15/10/14.
+//  Copyright (c) 2015年 zimacaihang. All rights reserved.
+//
+
+#import "sendRedPackController.h"
+#import "SendRedPackTableViewCell.h"
+#import "GTCommontHeader.h"
+#import "UIImageView+WebCache.h"
+#import "MBProgressHUD.h"
+
+//分享
+#import "UMSocial.h"
+#import "UMSocialWechatHandler.h"
+#import "UMSocialQQHandler.h"
+#import "UMSocialSinaHandler.h"
+
+@interface sendRedPackController ()<UITableViewDataSource,UITableViewDelegate,UMSocialUIDelegate>
+
+@property (nonatomic,assign) NSInteger page;
+
+@end
+
+@implementation sendRedPackController
+
+{
+    NSMutableArray *_dataArray;
+    NSString * shareUrl;
+    NSString * shareTitle;
+    NSString * shareImage;
+    NSString * shareCenter;
+    
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    _page = 1;
+    [self requestDataWithPage:_page];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+//    self.view.autoresizesSubviews = YES;
+    
+    self.title = @"发红包";
+    
+    _dataArray = [[NSMutableArray alloc] init];
+    for (UIView* view in self.view.subviews){
+        view.frame = GetFramByXib(view.frame);
+        for (UIView* childview in view.subviews){
+            childview.frame = GetFramByXib(childview.frame);
+            for (UIView * childView1 in childview.subviews) {
+                childView1.frame = GetFramByXib(childView1.frame);
+            }
+        }
+    }
+
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    [self createTableVIew];
+    _label1.font = [UIFont systemFontOfSize:GTFixHeightFlaot(16)];
+    _label2.font = [UIFont systemFontOfSize:GTFixHeightFlaot(16)];
+    _allRedEnvelopeLabel.font = [UIFont systemFontOfSize:GTFixHeightFlaot(16)];
+    _receiveRedEnvelopeLabel.font = [UIFont systemFontOfSize:GTFixHeightFlaot(16)];
+    
+}
+
+-(void)requestDataWithPage:(NSInteger)page
+{
+    
+    MBProgressHUD *HUDjz = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    [HUDjz setLabelText:@"加载ing..."];
+    
+    
+    
+    NSString * loginKey = [[ZMAdminUserStatusModel shareAdminUserStatusModel] getLoginKey];
+    
+    [[ZMServerAPIs shareZMServerAPIs] getUserRedPackWithLoginKey:loginKey Page:page Rows:20 Success:^(id response) {
+        CLog(@"%@",response);
+        
+        if (_dataArray.count > 0) {
+            [_dataArray removeAllObjects];
+        }
+        NSDictionary *dict = (NSDictionary *)response;
+        
+        NSArray *array = dict[@"redPShareList"];
+        for (NSDictionary *subDict in array) {
+            
+            [_dataArray addObject:subDict];
+        }
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [HUDjz hide:YES afterDelay:0.5];
+            self.allRedEnvelopeLabel.text = [NSString stringWithFormat:@"%d",[dict[@"redPNumSum"] intValue]];
+            self.receiveRedEnvelopeLabel.text = [NSString stringWithFormat:@"%d",[dict[@"redPNumGainSum"] intValue]];
+            [self.tableView reloadData];
+        });
+        
+    } failure:^(id response) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [HUDjz setLabelText:@"请检查网络"];
+            [HUDjz hide:YES afterDelay:1];
+        });
+        
+//        CLog(@"请求数据失败%@",response);
+        
+    }];
+    
+}
+
+-(void)createTableVIew
+{
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+//    self.tableView.backgroundColor = []
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, WIDTH_OF_SCREEN, 30)];
+    [view addSubview:_dayLabel];
+    
+    self.tableView.tableHeaderView = self.headerView;
+    self.tableView.tableFooterView = view;
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.tableView.frame = CGRectMake(0, 64, WIDTH_OF_SCREEN, HEIGHT_OF_SCREEN-64);
+        self.dayLabel.frame = CGRectMake(0, 0, WIDTH_OF_SCREEN, 30);
+    });
+}
+
+#pragma mark ------ tableViewDelegate
+
+
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return _dataArray.count;
+}
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 1;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
+    
+    return 10;
+}
+
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    SendRedPackTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"qqqq"];
+    if (!cell) {
+
+        cell = [[[NSBundle mainBundle] loadNibNamed:@"SendRedPackTableViewCell" owner:nil options:nil] lastObject];
+
+        for (UIView* view in cell.contentView.subviews) {
+            view.frame = GetFramByXib(view.frame);
+            for (UIView* subview in view.subviews) {
+                subview.frame = GetFramByXib(subview.frame);
+            }
+        }
+    }
+
+    
+    cell.shengyuLabel.text = [NSString stringWithFormat:@"%@个已领取，剩余%@个",[[_dataArray objectAtIndex:indexPath.section] objectForKey:@"redPNumGain"],[[_dataArray objectAtIndex:indexPath.section] objectForKey:@"redPNum"]];
+    cell.youxiaoDateLabel.text = [NSString stringWithFormat:@"%@",[[_dataArray objectAtIndex:indexPath.section] objectForKey:@"endDate"]];
+    
+    cell.shengyuLabel.font = [UIFont systemFontOfSize:GTFixHeightFlaot(14)];
+    cell.youxiaoDateLabel.font = [UIFont systemFontOfSize:GTFixHeightFlaot(12)];
+    
+    if ([[[_dataArray objectAtIndex:indexPath.section] objectForKey:@"redPNum"] intValue] == 0) {
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [cell.sendButton setTitle:@"发完了" forState:UIControlStateNormal];
+            cell.sendButton.backgroundColor = [UIColor whiteColor];
+            [cell.sendButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+            cell.sendButton.userInteractionEnabled = NO;
+        });
+    }
+    [cell.sendButton addTarget:self action:@selector(sendButtonClick:) forControlEvents:UIControlEventTouchUpInside];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.sendButton.tag = 600+indexPath.section;
+    return cell;
+    
+}
+
+-(void)sendButtonClick:(UIButton *)button{
+    
+    shareUrl = [[_dataArray objectAtIndex:(button.tag-600)] objectForKey:@"share_url"];
+    shareImage = [[_dataArray objectAtIndex:button.tag-600] objectForKey:@"share_imgurl"];
+    shareTitle = [[_dataArray objectAtIndex:button.tag-600] objectForKey:@"shareTitle"];
+    shareCenter = [[_dataArray objectAtIndex:button.tag-600] objectForKey:@"shareCenter"];
+    
+    [self ShareAction];
+}
+
+-(void)ShareAction{
+    [UMSocialSnsService presentSnsIconSheetView:self
+                                         appKey:@"5599dac267e58ebe36003a91"
+                                      shareText:nil
+                                     shareImage:nil
+                                shareToSnsNames:[NSArray arrayWithObjects:UMShareToWechatSession,UMShareToWechatTimeline,UMShareToSina,UMShareToTencent,UMShareToQQ,UMShareToSms,nil]
+                                       delegate:self];
+}
+
+-(void)didSelectSocialPlatform:(NSString *)platformName withSocialData:(UMSocialData *)socialData
+{
+    
+    if (platformName == UMShareToSina) {
+        socialData.title = shareTitle;
+        socialData.shareText = [NSString stringWithFormat:@"%@",shareCenter];
+        NSData *dateImg = [NSData dataWithContentsOfURL:[NSURL URLWithString:shareImage]];
+        socialData.shareImage = dateImg;
+    }else if (platformName == UMShareToSms) {
+        //        socialData.shareImage = [UIImage imageNamed:@"fenxiang"];
+        [UMSocialData defaultData].extConfig.smsData.shareImage =[UIImage imageNamed:@"meiyou"];
+
+        socialData.shareText = [NSString stringWithFormat:@"%@%@",shareCenter,shareUrl];
+        
+    }else if (platformName == UMShareToTencent) {
+        
+        socialData.shareText = [NSString stringWithFormat:@"%@%@",shareCenter,shareUrl];
+        socialData.title = shareTitle;
+        NSData *dateImg = [NSData dataWithContentsOfURL:[NSURL URLWithString:shareImage]];
+        socialData.shareImage = dateImg;
+    }
+    else if (platformName == UMShareToQQ) {
+        [UMSocialData defaultData].extConfig.qqData.title = shareTitle;
+        socialData.shareText = shareCenter;
+        //        socialData.shareImage = [UIImage imageNamed:@"fenxiang"];
+        NSData *dateImg = [NSData dataWithContentsOfURL:[NSURL URLWithString:shareImage]];
+        [UMSocialQQHandler setQQWithAppId:@"1104778512" appKey:@"VJsApXjPlwdgNZLg" url:shareUrl];
+        [UMSocialData defaultData].extConfig.qqData.shareImage =dateImg;
+        //        [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeImage url:self.shareUrl];
+        CLog(@"%@",shareUrl);
+    }else if (platformName == UMShareToWechatSession) {
+        [UMSocialWechatHandler setWXAppId:@"wxdd8ea8c380def15d" appSecret:@"9dc4d7e88d59acd4417ac1076dbf189a" url:shareUrl];
+        
+        [UMSocialData defaultData].extConfig.wechatSessionData.title = shareTitle;
+        socialData.shareText = shareCenter;
+        socialData.title = shareTitle;
+        NSData *dateImg = [NSData dataWithContentsOfURL:[NSURL URLWithString:shareImage]];
+        socialData.shareImage = dateImg;
+        CLog(@"%@",[NSURL URLWithString:shareImage]);
+        [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeDefault url:shareUrl];
+        [[UMSocialData defaultData].urlResource setUrl:shareUrl];
+        
+        CLog(@"%@",shareUrl);
+    }else if (platformName == UMShareToWechatTimeline) {
+        [UMSocialWechatHandler setWXAppId:@"wxdd8ea8c380def15d" appSecret:@"9dc4d7e88d59acd4417ac1076dbf189a" url:shareUrl];
+        
+        NSData *dateImg = [NSData dataWithContentsOfURL:[NSURL URLWithString:shareImage]];
+        socialData.shareImage = dateImg;
+        socialData.shareText = shareTitle;
+        [[UMSocialData defaultData].urlResource setResourceType:UMSocialUrlResourceTypeImage url:shareUrl];
+        CLog(@"%@",shareUrl);
+    }
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return HEIGHT_OF_SCREEN/568*62;
+
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

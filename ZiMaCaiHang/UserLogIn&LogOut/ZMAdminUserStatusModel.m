@@ -1,0 +1,899 @@
+//
+//  ZMAdminUserStatusModel.m
+//  ZMSD
+//
+//  Created by zima on 14-12-16.
+//  Copyright (c) 2014年 zima. All rights reserved.
+//
+
+#import "ZMAdminUserStatusModel.h"
+#import "ZMNavigationController.h"
+#import <UIKit/UIKit.h>
+
+#import "ZMRegisterInViewController.h"
+#import "ZMLogInLogOutViewController.h"
+
+//数据库
+#import "ZMFMDBOperation+USER.h"
+
+#import "PatternLockView.h"
+#import "AppDelegate.h"
+#import "MBProgressHUD.h"
+#import "NSData+Encryption.h"
+#import "Base64.h"
+#define Key_LoginKey       @"admin_user_LoginKey"
+
+#define Key_UserId         @"admin_user_id_key"
+#define Key_Password       @"admin_password_key"
+#import "DES3Util.h"
+#define UPDATE_USER_INFO @"updateuserinfo"
+@implementation ZMAdminUserStatusModel
+
++(ZMAdminUserStatusModel*)shareAdminUserStatusModel
+{
+    static ZMAdminUserStatusModel *manmager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        manmager = [[ZMAdminUserStatusModel alloc] init];
+    });
+    return manmager;
+}
+
+//判断对象是否为空
++(BOOL)isNullObject:(id)object {
+    if([object isKindOfClass:[NSNull class]])
+    {
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
+-(BOOL)isNullObject:(id)object {
+    if([object isKindOfClass:[NSNull class]])
+    {
+        return YES;
+    }
+    else
+    {
+        return NO;
+    }
+}
+
+//用户基本信息
+/*
+-(BOOL)updateUserBaseInfoSuccess:(void(^)(id response))success failure:(void(^)(id response))failure{
+    
+    _adminuserBaseInfo = [[ZMAdminUserBaseInfo alloc]init];
+    
+    [[ZMServerAPIs shareZMServerAPIs] getUserBaseInfoSuccess:^(id response) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            NSLog(@"用户基本信息 === %@", response);
+            
+            if ([[response objectForKey:@"code"] integerValue] == 1000)
+            {
+                NSDictionary * dataDic  = [response objectForKey:@"data"];
+                if (dataDic == nil) {
+                    return;
+                }
+                
+                NSDictionary *userInfoDic =  [[response objectForKey:@"data"] objectForKey:@"userInfo"];
+                
+                self.adminuserBaseInfo.userId = [[userInfoDic objectForKey:@"userId"] longValue];
+                
+                self.adminuserBaseInfo.userSubId = [self isNullObject:[userInfoDic objectForKey:@"userSubId"]] ? 0 : [[userInfoDic objectForKey:@"userSubId"] longValue];
+                
+                self.adminuserBaseInfo.avartar = [self isNullObject:[userInfoDic objectForKey:@"avartar"]] ? @"" : [NSString stringWithFormat:@"http://static.zimacaihang.com/headImg/%@", [userInfoDic objectForKey:@"avartar"]];
+                
+                //[userInfoDic objectForKey:@"avartar"];//[userInfoDic objectForKey:@"avartar"];
+                
+                self.adminuserBaseInfo.birthday = [self isNullObject:[userInfoDic objectForKey:@"birthday"]] ? @"" : [userInfoDic objectForKey:@"birthday"];//[userInfoDic objectForKey:@"birthday"];
+                self.adminuserBaseInfo.gender = [self isNullObject:[userInfoDic objectForKey:@"gender"]] ? @"" : [userInfoDic objectForKey:@"gender"];//[userInfoDic objectForKey:@"gender"];
+                self.adminuserBaseInfo.genderValue = [self isNullObject:[userInfoDic objectForKey:@"genderValue"]] ? @"" : [userInfoDic objectForKey:@"genderValue"];//[userInfoDic objectForKey:@"genderValue"];
+                
+                
+                //涉及到安全设置
+                
+                //                @property (nonatomic, assign) BOOL     mobileValidated;     //手机号码认证
+                //                @property (nonatomic, assign) BOOL     idCardValidated;     //身份认证
+                //                @property (nonatomic, assign) BOOL     realNameValidated;   //实名认证
+                
+                
+                self.adminuserBaseInfo.idCard = [self isNullObject:[userInfoDic objectForKey:@"idCard"]] ? @"" : [userInfoDic objectForKey:@"idCard"];//[userInfoDic objectForKey:@"idCard"];
+                self.adminuserBaseInfo.realname = [self isNullObject:[userInfoDic objectForKey:@"realname"]] ? @"" : [userInfoDic objectForKey:@"realname"];//[userInfoDic objectForKey:@"realname"];
+                
+                self.adminuserBaseInfo.mobile = [self isNullObject:[userInfoDic objectForKey:@"mobile"]] ? @"" : [userInfoDic objectForKey:@"mobile"];//[userInfoDic objectForKey:@"mobile"];
+                
+                self.adminuserBaseInfo.email = [self isNullObject:[userInfoDic objectForKey:@"email"]] ? @"" : [userInfoDic objectForKey:@"email"];//[userInfoDic objectForKey:@"email"];
+                
+                //是否实名认证
+                if(![self.adminuserBaseInfo.idCard isEqualToString:@""] &&
+                   ![self.adminuserBaseInfo.realname isEqualToString:@""])
+                {
+                    self.idCardValidated = YES;
+                }
+                else
+                {
+                    self.idCardValidated = NO;
+                }
+                
+                
+                //是否手机认证
+                if(![self.adminuserBaseInfo.mobile isEqualToString:@""])
+                {
+                    self.mobileValidated = YES;
+                }
+                else
+                {
+                    self.mobileValidated = NO;
+                }
+                
+                //是否邮箱认证
+                if(![self.adminuserBaseInfo.email isEqualToString:@""])
+                {
+                    self.emailValidated = YES;
+                }
+                else
+                {
+                    self.emailValidated = NO;
+                }
+                
+                //理财师
+                self.adminuserBaseInfo.isFinancialPlanner = [self isNullObject:[userInfoDic objectForKey:@"permanent"]] ? NO : [userInfoDic objectForKey:@"permanent"];//[[userInfoDic objectForKey:@"permanent"] boolValue] ? YES:NO;
+                
+                self.adminuserBaseInfo.companyIndustry = [self isNullObject:[userInfoDic objectForKey:@"companyIndustry"]] ? @"" : [userInfoDic objectForKey:@"companyIndustry"];//[userInfoDic objectForKey:@"companyIndustry"];
+                self.adminuserBaseInfo.companyIndustryValue = [self isNullObject:[userInfoDic objectForKey:@"companyIndustryValue"]] ? @"" : [userInfoDic objectForKey:@"companyIndustryValue"];//[userInfoDic objectForKey:@"companyIndustryValue"];
+                self.adminuserBaseInfo.companyScale = [self isNullObject:[userInfoDic objectForKey:@"companyScale"]] ? @"" : [userInfoDic objectForKey:@"companyScale"];//[userInfoDic objectForKey:@"companyScale"];
+                self.adminuserBaseInfo.companyScaleValue = [self isNullObject:[userInfoDic objectForKey:@"companyScaleValue"]] ? @"" : [userInfoDic objectForKey:@"companyScaleValue"];//[userInfoDic objectForKey:@"companyScaleValue"];
+                self.adminuserBaseInfo.educationalType = [self isNullObject:[userInfoDic objectForKey:@"educationalType"]] ? @"" : [userInfoDic objectForKey:@"educationalType"];//[userInfoDic objectForKey:@"educationalType"];
+                self.adminuserBaseInfo.educationalTypeValue = [self isNullObject:[userInfoDic objectForKey:@"educationalTypeValue"]] ? @"" : [userInfoDic objectForKey:@"educationalTypeValue"];//[userInfoDic objectForKey:@"educationalTypeValue"];
+                self.adminuserBaseInfo.graduateInstitutions = [self isNullObject:[userInfoDic objectForKey:@"graduateInstitutions"]] ? @"" : [userInfoDic objectForKey:@"graduateInstitutions"];//[userInfoDic objectForKey:@"graduateInstitutions"];
+                self.adminuserBaseInfo.incomeMonthly = [self isNullObject:[userInfoDic objectForKey:@"incomeMonthly"]] ? @"" : [userInfoDic objectForKey:@"incomeMonthly"];//[userInfoDic objectForKey:@"incomeMonthly"];
+                self.adminuserBaseInfo.incomeMonthlyValue = [self isNullObject:[userInfoDic objectForKey:@"incomeMonthlyValue"]] ? @"" : [userInfoDic objectForKey:@"incomeMonthlyValue"];//[userInfoDic objectForKey:@"incomeMonthlyValue"];
+                self.adminuserBaseInfo.marriageStatusValue = [self isNullObject:[userInfoDic objectForKey:@"marriageStatusValue"]] ? @"" : [userInfoDic objectForKey:@"marriageStatusValue"];//[userInfoDic objectForKey:@"marriageStatusValue"];
+                self.adminuserBaseInfo.position = [self isNullObject:[userInfoDic objectForKey:@"position"]] ? @"" : [userInfoDic objectForKey:@"position"];//[userInfoDic objectForKey:@"position"];
+                self.adminuserBaseInfo.residentialAddress = [self isNullObject:[userInfoDic objectForKey:@"residentialAddress"]] ? @"" : [userInfoDic objectForKey:@"residentialAddress"];//[userInfoDic objectForKey:@"residentialAddress"];
+                
+                
+                if (_adminuserBaseInfo) {
+                    
+                }
+                _userUpdatedBaseInfo(_adminuserBaseInfo);//用于刷新主菜单名称和头像
+            }
+            
+            success(@"ZXH HHH");
+        });
+    } failure:^(id response) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+
+            failure(@"");
+        });
+    }];
+    
+    return YES;
+}
+*/
+
+
+/*
+ * 获取用户基本信息
+ */
+-(BOOL)updateUserBaseInfo{
+    
+    _adminuserBaseInfo = [[ZMAdminUserBaseInfo alloc]init];
+    
+    [[ZMServerAPIs shareZMServerAPIs] getUserBaseInfoSuccess:^(id response) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            CLog(@"刷新用户基本信息 === %@", response);
+           [[NSNotificationCenter defaultCenter] postNotificationName:UPDATE_USER_INFO object:nil];
+            if ([[response objectForKey:@"code"] integerValue] == 1000)
+            {
+                NSDictionary * dataDic  = [response objectForKey:@"data"];
+                if (dataDic == nil) {
+                    return;
+                }
+                
+                NSDictionary *userInfoDic =  [[response objectForKey:@"data"] objectForKey:@"userInfo"];
+                
+                self.adminuserBaseInfo.userId = [[userInfoDic objectForKey:@"userId"] longValue];
+               [[NSUserDefaults standardUserDefaults] setValue:userInfoDic[@"userId"] forKey:@"MyUserId"];
+               [[NSUserDefaults standardUserDefaults]synchronize];
+                self.adminuserBaseInfo.userSubId = [self isNullObject:[userInfoDic objectForKey:@"userSubId"]] ? 0 : [[userInfoDic objectForKey:@"userSubId"] longValue];
+                
+                self.adminuserBaseInfo.avartar = [self isNullObject:[userInfoDic objectForKey:@"avartar"]] ? @"" : [userInfoDic objectForKey:@"avartar"];
+                
+                //[userInfoDic objectForKey:@"avartar"];//[userInfoDic objectForKey:@"avartar"];
+                
+                self.adminuserBaseInfo.birthday = [self isNullObject:[userInfoDic objectForKey:@"birthday"]] ? @"" : [userInfoDic objectForKey:@"birthday"];//[userInfoDic objectForKey:@"birthday"];
+                self.adminuserBaseInfo.gender = [self isNullObject:[userInfoDic objectForKey:@"gender"]] ? @"" : [userInfoDic objectForKey:@"gender"];//[userInfoDic objectForKey:@"gender"];
+                self.adminuserBaseInfo.genderValue = [self isNullObject:[userInfoDic objectForKey:@"genderValue"]] ? @"" : [userInfoDic objectForKey:@"genderValue"];//[userInfoDic objectForKey:@"genderValue"];
+                
+                
+                //涉及到安全设置
+                
+//                @property (nonatomic, assign) BOOL     mobileValidated;     //手机号码认证
+//                @property (nonatomic, assign) BOOL     idCardValidated;     //身份认证
+//                @property (nonatomic, assign) BOOL     realNameValidated;   //实名认证
+                
+                
+                self.adminuserBaseInfo.idCard = [self isNullObject:[userInfoDic objectForKey:@"idCard"]] ? @"" : [userInfoDic objectForKey:@"idCard"];//[userInfoDic objectForKey:@"idCard"];
+                self.adminuserBaseInfo.realname = [self isNullObject:[userInfoDic objectForKey:@"realname"]] ? @"" : [userInfoDic objectForKey:@"realname"];//[userInfoDic objectForKey:@"realname"];
+                
+                self.adminuserBaseInfo.mobile = [self isNullObject:[userInfoDic objectForKey:@"mobile"]] ? @"" : [userInfoDic objectForKey:@"mobile"];//[userInfoDic objectForKey:@"mobile"];
+                
+                self.adminuserBaseInfo.email = [self isNullObject:[userInfoDic objectForKey:@"email"]] ? @"" : [userInfoDic objectForKey:@"email"];//[userInfoDic objectForKey:@"email"];
+               
+                self.adminuserBaseInfo.firstInAmount = [NSString stringWithFormat:@"%d",[self isNullObject:[userInfoDic objectForKey:@"firstInAmount"]]] ? @"1" : @"0";//[userInfoDic objectForKey:@"firstInAmount"];
+                
+                //是否实名认证
+                if(![self.adminuserBaseInfo.idCard isEqualToString:@""] &&
+                   ![self.adminuserBaseInfo.realname isEqualToString:@""])
+                {
+                    self.idCardValidated = YES;
+                }
+                else
+                {
+                    self.idCardValidated = NO;
+                }
+                
+                
+                //是否手机认证
+                if(![self.adminuserBaseInfo.mobile isEqualToString:@""])
+                {
+                    self.mobileValidated = YES;
+                }
+                else
+                {
+                    self.mobileValidated = NO;
+                }
+                
+                //是否邮箱认证
+                if(![self.adminuserBaseInfo.email isEqualToString:@""])
+                {
+                    self.emailValidated = YES;
+                }
+                else
+                {
+                    self.emailValidated = NO;
+                }
+               //是否首次充值
+               if([self.adminuserBaseInfo.firstInAmount isEqualToString:@"1"])
+               {
+                  self.isFirstInAmount = YES;
+               }
+               else
+               {
+                  self.isFirstInAmount = NO;
+               }
+
+               
+                
+                //理财师
+                self.adminuserBaseInfo.isFinancialPlanner = [self isNullObject:[userInfoDic objectForKey:@"isPermanent"]] ? NO : [userInfoDic objectForKey:@"isPermanent"];//[[userInfoDic objectForKey:@"permanent"] boolValue] ? YES:NO;
+                
+                self.adminuserBaseInfo.companyIndustry = [self isNullObject:[userInfoDic objectForKey:@"companyIndustry"]] ? @"" : [userInfoDic objectForKey:@"companyIndustry"];//[userInfoDic objectForKey:@"companyIndustry"];
+                self.adminuserBaseInfo.companyIndustryValue = [self isNullObject:[userInfoDic objectForKey:@"companyIndustryValue"]] ? @"" : [userInfoDic objectForKey:@"companyIndustryValue"];//[userInfoDic objectForKey:@"companyIndustryValue"];
+                self.adminuserBaseInfo.companyScale = [self isNullObject:[userInfoDic objectForKey:@"companyScale"]] ? @"" : [userInfoDic objectForKey:@"companyScale"];//[userInfoDic objectForKey:@"companyScale"];
+                self.adminuserBaseInfo.companyScaleValue = [self isNullObject:[userInfoDic objectForKey:@"companyScaleValue"]] ? @"" : [userInfoDic objectForKey:@"companyScaleValue"];//[userInfoDic objectForKey:@"companyScaleValue"];
+                self.adminuserBaseInfo.educationalType = [self isNullObject:[userInfoDic objectForKey:@"educationalType"]] ? @"" : [userInfoDic objectForKey:@"educationalType"];//[userInfoDic objectForKey:@"educationalType"];
+                self.adminuserBaseInfo.educationalTypeValue = [self isNullObject:[userInfoDic objectForKey:@"educationalTypeValue"]] ? @"" : [userInfoDic objectForKey:@"educationalTypeValue"];//[userInfoDic objectForKey:@"educationalTypeValue"];
+                self.adminuserBaseInfo.graduateInstitutions = [self isNullObject:[userInfoDic objectForKey:@"graduateInstitutions"]] ? @"" : [userInfoDic objectForKey:@"graduateInstitutions"];//[userInfoDic objectForKey:@"graduateInstitutions"];
+                self.adminuserBaseInfo.incomeMonthly = [self isNullObject:[userInfoDic objectForKey:@"incomeMonthly"]] ? @"" : [userInfoDic objectForKey:@"incomeMonthly"];//[userInfoDic objectForKey:@"incomeMonthly"];
+                self.adminuserBaseInfo.incomeMonthlyValue = [self isNullObject:[userInfoDic objectForKey:@"incomeMonthlyValue"]] ? @"" : [userInfoDic objectForKey:@"incomeMonthlyValue"];//[userInfoDic objectForKey:@"incomeMonthlyValue"];
+                self.adminuserBaseInfo.marriageStatusValue = [self isNullObject:[userInfoDic objectForKey:@"marriageStatusValue"]] ? @"" : [userInfoDic objectForKey:@"marriageStatusValue"];//[userInfoDic objectForKey:@"marriageStatusValue"];
+                self.adminuserBaseInfo.position = [self isNullObject:[userInfoDic objectForKey:@"position"]] ? @"" : [userInfoDic objectForKey:@"position"];//[userInfoDic objectForKey:@"position"];
+                self.adminuserBaseInfo.residentialAddress = [self isNullObject:[userInfoDic objectForKey:@"residentialAddress"]] ? @"" : [userInfoDic objectForKey:@"residentialAddress"];//[userInfoDic objectForKey:@"residentialAddress"];
+                
+
+               //刷新用户数据（bolck回调方式）
+//                if (_adminuserBaseInfo) {
+//                    _userUpdatedBaseInfo(_adminuserBaseInfo);//用于刷新主菜单名称和头像
+//                }
+               
+               //刷新用户数据
+               [[NSNotificationCenter defaultCenter]postNotificationName:UPDATE_BSAE_USER_INFO_SUCCESS_NOTIFICATION_NAME object:nil];
+            }
+        });
+    } failure:^(id response) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            if ([[response objectForKey:@"code"] integerValue] != 1000) {
+            }
+            
+        });
+    }];
+    
+    return YES;
+}
+
+//用户资产信息
+-(BOOL)updateUserAssert{
+    
+    _adminUserAssert = [[ZMAdminUserAssert alloc] init];
+    
+    [[ZMServerAPIs shareZMServerAPIs] getUserAssertSuccess:^(id response) {
+        if ([[response objectForKey:@"code"] integerValue] == 1000)
+        {
+           NSDictionary *assertDic = [response objectForKey:@"data"];
+            
+            CLog(@"assertDic === %@", assertDic);
+            
+            _adminUserAssert.userInvestVO = [assertDic objectForKey:@"userInvestVO"];
+            _adminUserAssert.userPointVO = [assertDic objectForKey:@"userPointVO"];
+            _adminUserAssert.userProfitVo = [assertDic objectForKey:@"userProfitVo"];
+            
+           
+           //  资金信息刷新成功
+           [[NSNotificationCenter defaultCenter] postNotificationName:UPDATE_USER_ASSERT_SUCCESS_NOTIFICATION_NAME object:nil];
+           
+           
+           
+            /*
+             {"message":"获取数据成功",
+             "data":
+                 {
+                     "userPointVO":{"amount":10514.89,"availablePoints":8092.65,"waittingPrincipal":2422.24,"frozenPoints":0.0},
+                 
+                     "userProfitVo":{"totalAlreadyProfit":16.41,
+                                     "totalWaitingProfit":560.27,
+                                     "alreadyProfits":[{"amount":352.5,"productName":"INVEST_PRODUCT","displayProductName":"紫定盈"},
+                                                       {"amount":207.77,"productName":"PRODUCT","displayProductName":"紫贷宝"}],
+                                    "waittingProfits":[{"amount":352.5,"productName":"INVEST_PRODUCT","displayProductName":"紫定盈"},
+                                                       {"amount":207.77,"productName":"PRODUCT","displayProductName":"紫贷宝"}]
+                     },
+                 
+                     "userInvestVO":{"amount":6600.0,
+                                     "invsetAmouts":[{"amount":100.0,"productName":"RIZIBAO","displayProductName":"日紫宝"},
+                                                     {"amount":4000.0,"productName":"INVEST_PRODUCT","displayProductName":"紫定盈"},
+                                                     {"amount":2500.0,"productName":"PRODUCT","displayProductName":"紫贷宝"}]
+                                     }
+                 },
+             
+             "code":1000
+             }
+             */
+            
+            /*
+             {
+             code = 1000;
+             data =     {
+             userInvestVO =         {
+             amount = 6600;
+             invsetAmouts =             (
+             {
+             amount = 100;
+             displayProductName = "\U65e5\U7d2b\U5b9d";
+             productName = RIZIBAO;
+             },
+             {
+             amount = 4000;
+             displayProductName = "\U7d2b\U5b9a\U76c8";
+             productName = "INVEST_PRODUCT";
+             },
+             {
+             amount = 2500;
+             displayProductName = "\U7d2b\U8d37\U5b9d";
+             productName = PRODUCT;
+             }
+             );
+             };
+             userPointVO =         {
+             amount = "10514.89";
+             availablePoints = "8092.65";
+             frozenPoints = 0;
+             waittingPrincipal = "2422.24";
+             };
+             userProfitVo =         {
+             alreadyProfits =             (
+             {
+             amount = "352.5";
+             displayProductName = "\U7d2b\U5b9a\U76c8";
+             productName = "INVEST_PRODUCT";
+             },
+             {
+             amount = "207.77";
+             displayProductName = "\U7d2b\U8d37\U5b9d";
+             productName = PRODUCT;
+             }
+             );
+             totalAlreadyProfit = "16.41";
+             totalWaitingProfit = "560.27";
+             waittingProfits =             (
+             {
+             amount = "352.5";
+             displayProductName = "\U7d2b\U5b9a\U76c8";
+             productName = "INVEST_PRODUCT";
+             },
+             {
+             amount = "207.77";
+             displayProductName = "\U7d2b\U8d37\U5b9d";
+             productName = PRODUCT;
+             }
+             );
+             };
+             };
+             message = "\U83b7\U53d6\U6570\U636e\U6210\U529f";
+             }
+             */
+        }
+    } failure:^(id response) {
+        if ([[response objectForKey:@"code"] integerValue] != 1000) {
+        }
+    }];
+    
+    return YES;
+}
+
+//用户账户信息
+-(BOOL)updateUserAccount{
+
+//  MBProgressHUD * _hud = [MBProgressHUD showHUDAddedTo:[[[UIApplication sharedApplication]delegate] window]animated:YES];
+//       [_hud setLabelText:@"更新账户"];
+   //    [_hud hide:YES afterDelay:1];
+    _adminUserAccountInfo = [[ZMAdminUserAccountInfo alloc] init];
+    
+    [[ZMServerAPIs shareZMServerAPIs] getUserAccountSuccess:^(id response) {
+//       [_hud hide:YES afterDelay:0.5];
+   
+//           [_hud hide:YES afterDelay:1];
+       
+      
+        if ([[response objectForKey:@"code"] integerValue] == 1000)
+        {
+            NSDictionary *userPointDic = [[response objectForKey:@"data"] objectForKey:@"userPoint"];
+            
+//            self.adminUserAccountInfo.amount = [[userPointDic objectForKey:@"amount"] doubleValue];
+//            self.adminUserAccountInfo.availablePoints = [[userPointDic objectForKey:@"availablePoints"] doubleValue];
+//            self.adminUserAccountInfo.frozenPoints = [[userPointDic objectForKey:@"frozenPoints"] doubleValue];
+//            self.adminUserAccountInfo.waittingPrincipal = [[userPointDic objectForKey:@"waittingPrincipal"] doubleValue];
+
+            CLog(@"userPointDic =  %@", userPointDic);
+            
+            
+            self.adminUserAccountInfo.amount = [self isNullObject:[userPointDic objectForKey:@"amount"]] ? 0 : [[userPointDic objectForKey:@"amount"] doubleValue];
+            
+            self.adminUserAccountInfo.availablePoints = [self isNullObject:[userPointDic objectForKey:@"availablePoints"]] ? 0 : [[userPointDic objectForKey:@"availablePoints"] doubleValue];
+            
+            self.adminUserAccountInfo.frozenPoints = [self isNullObject:[userPointDic objectForKey:@"frozenPoints"]] ? 0 : [[userPointDic objectForKey:@"frozenPoints"] doubleValue];
+            
+            self.adminUserAccountInfo.waittingPrincipal = [self isNullObject:[userPointDic objectForKey:@"waittingPrincipal"]] ? 0 : [[userPointDic objectForKey:@"waittingPrincipal"] doubleValue];
+            
+            
+           //  资金信息刷新成功
+           [[NSNotificationCenter defaultCenter] postNotificationName:UPDATE_USER_ASSERT_SUCCESS_NOTIFICATION_NAME object:nil];
+           
+           [[NSNotificationCenter defaultCenter]postNotificationName:@"enRefinshe" object:nil];
+            /*
+             {
+             code = 1000;
+             data = {
+                      userPoint = {
+                            amount = "8092.65";
+                            availablePoints = "8092.65";
+                            frozenPoints = 0;
+                            waittingPrincipal = "2422.24";
+                            };
+             };
+             message = "\U83b7\U53d6\U6570\U636e\U6210\U529f";
+             }
+             */
+        }
+    } failure:^(id response) {
+        if ([[response objectForKey:@"code"] integerValue] != 1000)
+        {
+            [[NSNotificationCenter defaultCenter]postNotificationName:@"enRefinshe" object:nil];
+        }
+    }];
+    return YES;
+}
+
+//更新用户数据信息（上边三个接口统一调用）
+-(void)updateAdminUserInfoFromServer
+{
+    [self updateUserBaseInfo];
+    [self updateUserAssert];
+    [self updateUserAccount];
+}
+
+//保存和获取用户的loginKey
+-(void)saveLoginKey:(NSString *)loginKey
+{
+   
+   // 加密
+   NSString *loginKeyDES = [DES3Util encrypt:loginKey];
+    [[NSUserDefaults standardUserDefaults] setObject:loginKeyDES forKey:Key_LoginKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+-(NSString *)getLoginKey
+{
+   NSString *stringLoginKeyDES = [[NSUserDefaults standardUserDefaults] objectForKey:Key_LoginKey];
+   NSString *stringLoginKey = [DES3Util decrypt:stringLoginKeyDES];
+   if (stringLoginKey == nil) {
+      CLog(@"getLoginKey 为 nil");
+      [[ZMAdminUserStatusModel shareAdminUserStatusModel] setLoggedStatus:NO];
+   }
+   else if ([ZMTools isNullObject:stringLoginKey] == YES)
+   {
+      CLog(@"getLoginKey 为 null");
+      [[ZMAdminUserStatusModel shareAdminUserStatusModel] setLoggedStatus:NO];
+   }
+   else
+   {
+      CLog(@"getLoginKey 为 %@", stringLoginKey);
+   }
+   
+   
+   return stringLoginKey;
+}
+
+/**
+ *  保存用户名和登录密码
+ *
+ *
+ *  @return
+ */
+-(void)saveUserId:(NSString *)userId password:(NSString *)password
+{
+   
+    NSString *passwordData =[DES3Util encrypt:userId];
+    NSString *userIdData = [DES3Util encrypt:password];
+    [[NSUserDefaults standardUserDefaults] setObject:userIdData forKey:Key_UserId];
+    [[NSUserDefaults standardUserDefaults] setObject:passwordData forKey:Key_Password];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+/**
+ *  读取用户名和登录密码
+ *
+ *  @return uid, password
+ */
+-(NSDictionary *)getLocalUserIdAndPassword
+{
+    NSString *useridData = [[NSUserDefaults standardUserDefaults] objectForKey:Key_UserId];
+    NSString *passwordData = [[NSUserDefaults standardUserDefaults] objectForKey:Key_Password];
+   
+   NSString *userid = [DES3Util decrypt:useridData];
+   
+   NSString *password = [DES3Util decrypt:passwordData];
+   
+    
+    if([userid isEqualToString:@""]||userid == nil || [password isEqualToString:@""]||password == nil)
+    {
+        return nil;
+    }
+    
+    
+    NSMutableDictionary *dictionary = [[NSMutableDictionary alloc]init];
+    [dictionary setObject:userid forKey:Key_UserId];
+    [dictionary setObject:password forKey:Key_Password];
+    
+    return dictionary;
+}
+
+/**
+ *  退出，或注销后，清除本地用户数据
+ *
+ *  @return YES清除成功， NO清除失败
+ */
+-(BOOL)deleteLocalUserInfo
+{
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:Key_UserId];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:Key_Password];
+    
+    
+    /**
+     *  用户退出、删除手势密码
+     */
+    [PatternLockView deletePatternPassword];
+
+    
+    return YES;
+}
+
+
+
+
+/**
+ *  是否已经登录
+ *
+ *  @return YES表示已经登录、NO未登录
+ */
+-(BOOL)isLoggedIn
+{
+    BOOL islogged =  [[[NSUserDefaults standardUserDefaults] valueForKey:@"loggedStatus"] boolValue];
+    
+    CLog(@"用户状态： %@", islogged ? @"登录状态":@"未登录状态");
+    
+    return islogged;
+}
+
+-(void)setLoggedStatus:(BOOL)islogged
+{
+    if (islogged) {
+        
+    }
+    else
+    {
+        //to do 注销需要删除一些东西
+       
+       //将logion key删除
+       [[ZMAdminUserStatusModel shareAdminUserStatusModel] saveLoginKey:@""];
+       
+        [self deleteLocalUserInfo];
+    }
+    
+    [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:islogged] forKey:@"loggedStatus"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+
+- (BOOL)updateTheNewestUserInfo:(NSDictionary *)userInfo
+{
+    CLog(@"userInfo = %@", userInfo);
+    self.userId = [[userInfo objectForKey:@"id"] longLongValue];
+    self.nickName = [userInfo objectForKey:@"nickName"];
+    self.headImage = [userInfo objectForKey:@"headImage"] ? [userInfo objectForKey:@"headImage"] : @"";
+    
+    self.allowBorrow = [[userInfo objectForKey:@"allowBorrow"] boolValue];
+    self.userInfoFinished = NO;  //[[userInfo objectForKey:@"userInfoFinished"] boolValue];
+    self.mobileValidated = [[userInfo objectForKey:@"mobileValidated"] boolValue];
+    self.allowLend = [[userInfo objectForKey:@"allowLend"] boolValue];
+    self.enable = [[userInfo objectForKey:@"enable"] boolValue];
+    self.idCardValidated = [[userInfo objectForKey:@"idCardValidated"] boolValue];
+    
+    self.receivingPrincipal = [[userInfo objectForKey:@"receivingPrincipal"] doubleValue];
+    self.frozenPoints = [[userInfo objectForKey:@"frozenPoints"] doubleValue];
+    self.availablePoints = [[userInfo objectForKey:@"availablePoints"] doubleValue];
+    self.receivedPoints = [[userInfo objectForKey:@"receivedPoints"] doubleValue];
+    self.receivingPoints = [[userInfo objectForKey:@"receivingPoints"] doubleValue];
+    self.totalPoints = [[userInfo objectForKey:@"totalPoints"] doubleValue];
+    
+    self.totalScores = [[userInfo objectForKey:@"totalScores"] doubleValue];
+    
+    
+    
+    //登录成功，更新当前的用户数据
+    [[ZMFMDBOperation sharedOperation] updateDatabaseWithUserModel:self with:k_InfoOperation_Update];
+    
+    
+    
+    return YES;
+}
+
+
+
+
+/**
+ *  弹出 alter 提醒框
+ *
+ *  @param vc
+ */
+-(void)popLoginVCWithCurrentViewController:(UIViewController*)vc
+{
+   dispatch_async(dispatch_get_main_queue(), ^{
+//      UIStoryboard *mainStoryBoard = [UIStoryboard  storyboardWithName:@"logInOut" bundle:nil];
+//      ZMNavigationController *LILO = (ZMNavigationController *)[mainStoryBoard instantiateViewControllerWithIdentifier:@"ZMLogInLogOutNav"];
+      
+      
+      
+//      if (LILO == nil || vc == nil) {
+//         CLog(@"啥哈哈哈哈哈哈啊哈哈好");
+//      }
+      ZMLogInLogOutViewController *next = [[ZMLogInLogOutViewController alloc] init];
+      UINavigationController* nav = [[UINavigationController alloc] initWithRootViewController:next];
+      nav.navigationBar.hidden = YES;
+   
+      
+      [vc presentViewController:nav animated:YES completion:nil];
+   });
+   
+   
+
+    
+
+    
+//    //有导航栏
+//    UIStoryboard *mainStoryBoard = [UIStoryboard  storyboardWithName:@"logInOut" bundle:nil];
+//    ZMNavigationController *LILO = (ZMNavigationController *)[mainStoryBoard instantiateViewControllerWithIdentifier:@"ZMLogInLogOutNav"];
+//    [vc presentViewController:[[LILO viewControllers] objectAtIndex:0] animated:NO completion:^{
+//        NSLog(@"present lock ");
+//    }];
+//    
+//    //没有导航栏
+//    ZMLogInLogOutViewController *next = [[ZMLogInLogOutViewController alloc]init];
+//    [vc presentViewController:next animated:NO completion:^{
+//        NSLog(@"present lock ");
+//    }];
+    
+}
+
+//直接弹注册
+-(void)popRegisterVCWithCurrentViewController:(UIViewController*)vc
+{
+
+   
+   
+   dispatch_async(dispatch_get_main_queue(), ^{
+      UIStoryboard *mainStoryBoard = [UIStoryboard  storyboardWithName:@"logInOut" bundle:nil];
+      ZMNavigationController *LILO = (ZMNavigationController *)[mainStoryBoard instantiateViewControllerWithIdentifier:@"ZMLogInLogOutNav"];
+   
+      
+      if (LILO == nil || vc == nil) {
+         CLog(@"啥哈哈哈哈哈哈啊哈哈好");
+      }
+      ZMLogInLogOutViewController* lonin = [[ZMLogInLogOutViewController alloc] init];
+      
+      UINavigationController* nav = [[UINavigationController alloc]  initWithRootViewController: lonin ];
+      nav.navigationBar.hidden = YES;
+      
+      
+      [vc presentViewController:nav animated:YES completion:^{
+         
+         dispatch_async(dispatch_get_main_queue(), ^{
+            ZMRegisterInViewController *LILO2 = (ZMRegisterInViewController *)[mainStoryBoard instantiateViewControllerWithIdentifier:@"ZMRegisterInViewController"];
+            
+            LILO2.isForgetPassword = NO;
+            
+            LILO2.isFromAppDelegate = NO;  //从appDelegate启动的。
+            
+            ZMLogInLogOutViewController *loginVC = (ZMLogInLogOutViewController *)[[LILO viewControllers] objectAtIndex:0];
+            [loginVC.navigationController pushViewController:LILO2 animated:YES];
+         });
+      }];
+      
+      CLog(@"%@", [LILO viewControllers]);
+   });
+}
+
+
+#pragma mark ----------------- 站内消息 -------------------------------
+
+/**
+ *  将新的page的数据组合到总的数组中
+ *
+ *  @param newPageProducts 获取的新的page的数据
+ *  @param pullUpward      YES上拉，NO下拉
+ */
+-(void)packagingAllLoadedProductArray:(NSMutableArray *) newPageProducts withPullPosition:(BOOL)pullUpward
+{
+    if (_allLoadedMsgArray == nil) {
+        _allLoadedMsgArray = [[NSMutableArray alloc] init];
+    }
+    
+    /**
+     *  向下拉加载最新，清除已经加载的数据
+     */
+    if (pullUpward == NO)
+    {
+        [_allLoadedMsgArray removeAllObjects];
+    }
+    else
+    {
+        //过滤重复的数据
+        for (int i=0; i < [newPageProducts count]; i++) {
+            NSInteger msg_id  = [[[newPageProducts objectAtIndex:i] objectForKey:@"id"] integerValue];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"id != %ld", msg_id];
+            [((NSMutableArray *)_allLoadedMsgArray) filterUsingPredicate:predicate];
+        }
+    }
+    
+    //已经被删除了就不加载了
+    for (NSDictionary * tempDic in newPageProducts) {
+        if ([[tempDic objectForKey:@"hasDeleted"] boolValue]) {
+            [newPageProducts removeObject:tempDic];
+        }
+        else //没有被删除的
+        {
+            if([[tempDic objectForKey:@"hasRead"] boolValue]) //是否未读
+            {
+                self.hasMessageRead = YES;
+            }
+            else
+            {
+                self.hasNewMessage = YES;
+                self.newMessageNumber = self.newMessageNumber + 1;
+                CLog(@"新消息数量 ： %d", self.newMessageNumber);
+            }
+        }
+    }
+    
+    
+    [_allLoadedMsgArray addObjectsFromArray:[newPageProducts copy]];
+    
+    //如果没有加载到已读消息，则继续加载下一页
+        if (self.hasMessageRead == NO && (self.newMessageNumber%8 != newPageProducts.count)) {
+            [self requestNewMessages];
+        }
+        else  //停止下一页的请求
+        {
+            NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:self.hasNewMessage], @"hasNewMessage", [NSNumber numberWithBool:self.newMessageNumber], @"newMsgNumber", nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:HAS_NEW_MESSAGE_NOTIFICATION_NAME object:dic];
+            
+            self.hasMessageRead = NO;//置为零
+            self.currentPage = 0;
+        }
+}
+
+/**
+ *  下拉刷新
+ */
+-(void)requestNewMessages
+{
+    //加载数据
+    self.currentPage = _currentPage + 1;
+    
+    [[ZMServerAPIs shareZMServerAPIs] requestMessageInfoWithPage:self.currentPage rowCount:8 Success:^(id response) {
+        CLog(@"成功获得消息 ---response = %@", response);
+        /*
+         {
+         code = 1000;
+         datas =
+         {
+         };
+         message = "<null>";
+         }
+         */
+        
+        /*
+         code = 1000;
+         datas =     ({
+         content = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa46aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa46aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+         createTime = 1419285264000;
+         hasDeleted = 0;
+         hasRead = 1;
+         id = 20;
+         title = "\U6295\U8d44\U6210\U529f\U6295\U8d44\U6210\U529f\U6295\U8d44\U6210\U529f\U6295\U8d44\U6210\U529f\U6295\U8d44\U6210\U529f\U6295\U8d44\U6210\U529f\U6295\U8d44\U6210\U529f\U6295\U8d44\U6210\U529f\U6295\U8d44\U6210\U529f\U6295\U8d44\U6295\U8d44\U6210\U529f\U6295\U8d44\U6210\U529f\U6295\U8d44\U6210\U529f";
+         userId = 77;
+         },
+         
+         */
+        
+        
+        
+        NSMutableArray *newPageProductArray = [[response objectForKey:@"datas"] mutableCopy];
+        
+        //        NSMutableArray *newPageProductArray =  [[NSMutableArray alloc] init];
+        //        for (int i = 0; i < 1; i++) {
+        //            NSMutableDictionary *dic = [[NSMutableDictionary alloc]init];
+        //            [dic setValue:[NSNumber numberWithInt:i] forKey:@"id"];
+        //            [dic setValue:@"习近平在福建与父亲合力保护林则徐遗迹" forKey:@"title"];
+        //            [dic setValue:[NSNumber numberWithInt:i*10] forKey:@"userId"];
+        //            [dic setValue:[NSNumber numberWithInt:i%2] forKey:@"hasRead"];
+        //            [dic setValue:[NSNumber numberWithInt:0] forKey:@"hasDeleted"];
+        //            [dic setValue:@"2014-12-24 12:36:55" forKey:@"createTime"];
+        //            [dic setValue:@"习近平总书记在北京主持召开文艺工作座谈会时曾说“不要搞奇奇怪怪的建筑”，引发广泛关注。而早在2014年2月25日，习近平在北京市考察工作时也指出，历史文化是城市的灵魂，要像爱惜自己的生命一样保护好城市历史文化遗产" forKey:@"content"];
+        //
+        //            [newPageProductArray addObject:dic];
+        //        }
+        
+        
+        if (newPageProductArray.count == 0) {
+            self.currentPage = 0;
+            self.hasNewMessage = NO;
+            self.newMessageNumber = 0;
+            return;
+        }
+        else
+        {
+            
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self packagingAllLoadedProductArray:newPageProductArray withPullPosition:YES];
+            });
+        }
+    } failure:^(id response) {
+        CLog(@"失败获得消息 ---response = %@", response);
+        self.currentPage = 0;
+        self.hasNewMessage = NO;
+        self.newMessageNumber = 0;
+    }];
+}
+
+
+
+
+@end

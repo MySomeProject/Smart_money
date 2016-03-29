@@ -1,0 +1,13 @@
+//
+//  AWardListViewController.h
+//  ZiMaCaiHang
+//
+//  Created by zhangxh on 15-5-13.
+//  Copyright (c) 2015年 zimacaihang. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface AWardListViewController : UITableViewController
+
+@end

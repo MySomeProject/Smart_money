@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+    </dependencies>
+    <scenes>
+        <!--首页-->
+        <scene sceneID="9HU-QK-PMa">
+            <objects>
+                <viewController storyboardIdentifier="HomePageViewController" title="首页" id="gJZ-kX-Bkx" customClass="HomePageViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="XST-T3-04q">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" id="ScF-wd-IRv" userLabel="topMenuContainer" customClass="ScrollMenu">
+                                <rect key="frame" x="0.0" y="20" width="320" height="60"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="nEs-uF-yv4" userLabel="rightButton">
+                                        <rect key="frame" x="260" y="0.0" width="60" height="60"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <inset key="imageEdgeInsets" minX="13" minY="17" maxX="33" maxY="17"/>
+                                        <state key="normal" image="rightButton.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="rightMoveAction:" destination="ScF-wd-IRv" eventType="touchUpInside" id="tRg-wU-k9L"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4md-SI-R2x" userLabel="leftButton">
+                                        <rect key="frame" x="0.0" y="0.0" width="60" height="60"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <inset key="imageEdgeInsets" minX="33" minY="17" maxX="13" maxY="17"/>
+                                        <state key="normal" image="leftButton.png">
+                                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="leftMoveAction:" destination="ScF-wd-IRv" eventType="touchUpInside" id="adh-8C-LtA"/>
+                                        </connections>
+                                    </button>
+                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="Qw6-fQ-uXr" customClass="TopMenuScrollView">
+                                        <rect key="frame" x="60" y="0.0" width="201" height="60"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </scrollView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="leftButton" destination="4md-SI-R2x" id="Eib-uG-ShM"/>
+                                    <outlet property="menuScrollView" destination="Qw6-fQ-uXr" id="SfT-VN-3gH"/>
+                                    <outlet property="rightButton" destination="nEs-uF-yv4" id="SUX-z3-adC"/>
+                                </connections>
+                            </view>
+                            <view contentMode="scaleToFill" id="dDT-Es-283" userLabel="bottomAdContainer" customClass="SecretaryScrollCellView">
+                                <rect key="frame" x="0.0" y="64" width="320" height="110"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <view contentMode="scaleToFill" id="C3O-Ep-5kN" userLabel="middleContainer">
+                                <rect key="frame" x="0.0" y="174" width="320" height="328"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="KX1-rc-cPT" userLabel="middleScrollView">
+                                        <rect key="frame" x="0.0" y="0.0" width="320" height="328"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </scrollView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <connections>
+                        <outlet property="middleContainer" destination="C3O-Ep-5kN" id="6p3-jJ-uPx"/>
+                        <outlet property="middleScrollView" destination="KX1-rc-cPT" id="kut-rv-ege"/>
+                        <outlet property="topBannerView" destination="dDT-Es-283" id="r0L-OG-OjW"/>
+                        <outlet property="topScrollMenu" destination="ScF-wd-IRv" id="3kP-v8-9za"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="9By-21-o8z" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-161.59999999999999" y="226.49000000000001"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="leftButton.png" width="7" height="13"/>
+        <image name="rightButton.png" width="7" height="13"/>
+    </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
+</document>

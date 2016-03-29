@@ -1,0 +1,507 @@
+//
+//  ZMRealNameSettingViewController.m
+//  ZMSD
+//
+//  Created by zima on 14-12-24.
+//  Copyright (c) 2014年 zima. All rights reserved.
+//
+
+#import "ZMRealNameSettingViewController.h"
+#import "HUD.h"
+#import "ZMAdminUserStatusModel.h"
+#import "AddBankCardViewController.h"
+
+
+@interface ZMRealNameSettingViewController ()<UITableViewDelegate, UITableViewDataSource, UIAlertViewDelegate, UITextFieldDelegate>
+{
+    //实名输入框
+    UITextField *nameTextField;
+    //身份证号码
+    UITextField *identityTextField;
+    
+    NSMutableString *currentString;
+    
+    UIButton *nextStepButton;
+}
+@end
+
+@implementation ZMRealNameSettingViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.title = @"实名认证";
+    [self.view setBackgroundColor:[UIColor whiteColor]];
+    
+    //输入框tableView背板（可上下弹动）
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height-64-2)
+                                                  style:UITableViewStyleGrouped];
+    [self.view addSubview:self.tableView];
+    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+    self.tableView.allowsSelection = YES;
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.tableView setBackgroundColor:[UIColor whiteColor]];
+    nameTextField = [[UITextField alloc] init];
+    identityTextField = [[UITextField alloc] init];
+    UIView *tableHeader = [[UIView alloc]initWithFrame:CGRectMake(0, 0, WIDTH_OF_SCREEN, 20)];
+    [tableHeader setBackgroundColor:[UIColor whiteColor]];
+    self.tableView.tableHeaderView = tableHeader;
+    
+    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+    if ([[[UIDevice currentDevice] systemVersion] floatValue]>7.0) {
+        self.automaticallyAdjustsScrollViewInsets = NO;//ios8 影响tableview坐标
+        [self.tableView setOrigin:CGPointMake(0, self.tableView.top+64)];
+    }
+    
+    //确认设置
+    nextStepButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [nextStepButton setFrame:CGRectMake(20/2.0, 150, [UIScreen mainScreen].bounds.size.width-20, 44)];
+    [nextStepButton setTitle:@"确 定" forState:UIControlStateNormal];
+    [nextStepButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [nextStepButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateHighlighted];
+    [nextStepButton.titleLabel setFont:[UIFont systemFontOfSize:18.0]];
+    
+    //默认情况下为非响应状态：
+    nextStepButton.enabled = NO;
+    [nextStepButton setBackgroundColor:[UIColor lightGrayColor]];
+    nextStepButton.layer.cornerRadius = 3.0;
+    [nextStepButton addTarget:self action:@selector(realNameConfirmAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.tableView addSubview:nextStepButton];
+    [self setInitData];
+    if (self.isAlreadyAuthen)
+    {
+        [identityTextField setEnabled:NO];
+        [nameTextField setEnabled:NO];
+    }
+    
+}
+
+//根据页面返回对应的位置
+-(void)returnBack{
+    
+    if (self.isRegiste == YES) {
+        [self.navigationController popToRootViewControllerAnimated:YES];
+    }
+    
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+}
+
+- (void)setInitData
+{
+    ZMAdminUserStatusModel *model = [ZMAdminUserStatusModel shareAdminUserStatusModel];
+    if (![ZMAdminUserStatusModel isNullObject:model])
+    {
+        if (![ZMAdminUserStatusModel isNullObject:model.adminuserBaseInfo.realname]) {
+            nameTextField.text = model.adminuserBaseInfo.realname;
+            identityTextField.text = model.adminuserBaseInfo.idCard;
+        }
+    }
+}
+
+//确认设置
+-(void)realNameConfirmAction:(UIButton *)button
+{
+//    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//        
+//        self.realNameAuthenticationBlock(YES);   //实名认证成功
+//        
+//        UIAlertView *alter = [[UIAlertView alloc] initWithTitle:@"成功" message:@"实名认证成功" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的", nil];
+//        alter.tag = 10001;
+//        [alter show];
+//    });
+//    
+//    return;
+    
+    
+    nextStepButton.enabled = NO;
+    
+    /**
+     *  实际部分
+     */
+    CLog(@"Name = %@, identity = %@", nameTextField.text, identityTextField.text);
+    
+    if(![ZMTools validateIdentityCard:identityTextField.text])
+    {
+        [[HUD sharedHUDText] showForTime:2.0 WithText:@"身份证号码错误!"];
+        nextStepButton.enabled = YES;
+        return;
+    }
+    
+    NSString *realName = nameTextField.text;
+    NSString *identityNumber = identityTextField.text;
+    
+    /**
+     *  测试部分
+     */
+//    NSString *realName = @"张小辉";
+//    NSString *identityNumber = @"510182198312244837";
+    MBProgressHUD *ProgressHUD = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        ProgressHUD.delegate = self;
+        ProgressHUD.mode = MBProgressHUDModeIndeterminate;
+        [ProgressHUD setLabelText:@"认证中..."];
+
+    [[ZMServerAPIs shareZMServerAPIs] setRealName:realName
+                                   identityNumber:identityNumber
+                                          success:^(id response) {
+                                              
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            CLog(@"身份认证成功：%@", response);
+//            [ProgressHUD hide:YES afterDelay:0];
+            [ProgressHUD setLabelText:@"实名成功"];
+            [ProgressHUD hide:YES afterDelay:0.8];
+            self.realNameAuthenticationBlock(YES);   //实名认证成功
+            
+            
+            //更新用户数据信息
+            [[ZMAdminUserStatusModel shareAdminUserStatusModel] updateUserBaseInfo];
+            
+            
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            
+                AddBankCardViewController *next = [[AddBankCardViewController alloc] init];
+                [self.navigationController pushViewController:next animated:YES];
+//                [self.navigationController popViewControllerAnimated:YES];
+            });
+
+            
+//            UIAlertView *alter = [[UIAlertView alloc] initWithTitle:@"成功" message:@"实名认证成功" delegate:self cancelButtonTitle:nil otherButtonTitles:@"好的", nil];
+//            alter.tag = 10001;
+//            alter.delegate = self;
+//            [alter show];
+            [nameTextField resignFirstResponder];
+            [identityTextField resignFirstResponder];
+            
+            
+            
+        });
+                                              
+    }failure:^(id response) {
+        
+        CLog(@"身份认证失败：%@", response);
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [ProgressHUD hide:YES afterDelay:0];
+            nextStepButton.enabled = YES;
+            [nameTextField resignFirstResponder];
+            [identityTextField resignFirstResponder];
+        });
+        
+        if(response == nil)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertView *alter = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"网络异常，请稍候再试" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"好的", nil];
+                [alter show];
+            });
+        }
+        
+        //{"message":"该用户已认证","code":2001}
+        else if([[response objectForKey:@"code"] integerValue] == 2001)
+        {
+              dispatch_async(dispatch_get_main_queue(), ^{
+                  UIAlertView *alter = [[UIAlertView alloc] initWithTitle:@"认证失败" message:@"该身份信息已被使用，确保该信息属于本人" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"好的", nil];
+                  [alter show];
+              });
+        }
+        
+//        {"message":"实名认证次数已达上限（5次）","code":2000}
+//        {"message":"实名认证失败，您还剩0次机会","code":2000,"afternum":0}
+        else if([[response objectForKey:@"code"] integerValue] == 2000)
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                
+                if([response objectForKey:@"afternum"] != nil)
+                {
+                    UIAlertView *alter = [[UIAlertView alloc] initWithTitle:@"认证失败"
+                                                                    message:[response objectForKey:@"message"]
+                                                                   delegate:nil
+                                                          cancelButtonTitle:nil
+                                                          otherButtonTitles:@"好的", nil];
+                    [alter show];
+                }
+                else
+                {
+                    UIAlertView *alter = [[UIAlertView alloc] initWithTitle:@"认证失败"
+                                                                    message:[response objectForKey:@"message"]
+                                                                   delegate:nil
+                                                          cancelButtonTitle:nil
+                                                          otherButtonTitles:@"好的", nil];
+                    [alter show];
+                }
+            });
+        }
+        
+        
+//        实名认证失败2：（身份证号码和姓名对应不上的情况）{“data”:{“message”:"认证失败","result":2002},"code":1000}
+        else
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertView *alter = [[UIAlertView alloc] initWithTitle:@"温馨提示" message:@"实名认证失败，请检查身份信息" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"好的", nil];
+                [alter show];
+            });
+        }
+        
+    }];
+}
+
+
+//检查是否有输入
+- (void)checkButtonStatus:(NSNotification *)notification
+{
+    if((UITextField *)notification.object == nameTextField)
+    {
+        CLog(@"nameTextField = %@", nameTextField.text);
+    }
+    
+    if((UITextField *)notification.object == identityTextField)
+    {
+        CLog(@"identityTextField = %@", identityTextField.text);
+    }
+    
+    if(![nameTextField.text isEqualToString:@""] && ![identityTextField.text isEqualToString:@""])
+    {
+        nextStepButton.enabled = YES;
+        [nextStepButton setBackgroundColor:Color_of_Red];
+    }
+    else{
+        nextStepButton.enabled = NO;
+        [nextStepButton setBackgroundColor:[UIColor lightGrayColor]];
+    }
+}
+
+
+
+#pragma mark - Table view data source
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+#warning Potentially incomplete method implementation.
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+#warning Incomplete method implementation.
+    return 2;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *identifier = @"tableViewInLoginView";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    
+    if (!cell) {
+        cell=[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+    }
+    
+    if (indexPath.row == 0) {
+        
+        //背板
+        UIView *tempBackgroundView = [[UIView alloc] init];
+        tempBackgroundView.frame = CGRectMake(SPACE20_WITH_BORDER, 0, [UIScreen mainScreen].bounds.size.width - 2*SPACE20_WITH_BORDER, 44);
+        
+        
+        //标题
+        //        UILabel *leftTitleLabel = [[UILabel alloc] init];
+        //        leftTitleLabel.userInteractionEnabled = NO;
+        //        leftTitleLabel.textAlignment = NSTextAlignmentLeft;
+        //        leftTitleLabel.frame = CGRectMake(0, 0, 80, 44);
+        //        [leftTitleLabel setBackgroundColor:[UIColor redColor]];
+        //        [leftTitleLabel setText:@"手机号码"];
+        
+        //手机图片
+        UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, (cell.contentView.frame.size.height - 20)/2, 0, 20)];//w=20
+        [imageView setImage:[UIImage imageNamed:@"nikeName.png"]];
+        
+        
+        //输入框
+        nameTextField.frame = CGRectMake(imageView.frame.size.width + SPACE10_WITH_BORDER, 0, tempBackgroundView.bounds.size.width - (imageView.frame.size.width + SPACE10_WITH_BORDER), 44);
+        
+        //        [nameTextField setKeyboardType:UIKeyboardTypePhonePad];
+        
+        nameTextField.textAlignment = NSTextAlignmentLeft;
+        [nameTextField setPlaceholder:@"请输入您的真实姓名"];
+        [nameTextField setBackgroundColor:[UIColor whiteColor]];
+        nameTextField.delegate = self;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(checkButtonStatus:)
+                                                     name:UITextFieldTextDidChangeNotification
+                                                   object:nameTextField];
+        
+        
+        
+        UILabel *lineLabel = [[UILabel alloc]initWithFrame:CGRectMake(-5, tempBackgroundView.frame.size.height-1, tempBackgroundView.frame.size.width+10, 0.5)];
+        [lineLabel setBackgroundColor:[UIColor lightGrayColor]];
+        
+        
+        [tempBackgroundView addSubview:imageView];
+        [tempBackgroundView addSubview:nameTextField];
+        [tempBackgroundView addSubview:lineLabel];
+        [cell.contentView addSubview:tempBackgroundView];
+        
+        
+        [tempBackgroundView setBackgroundColor:[UIColor clearColor]];
+        [imageView setBackgroundColor:[UIColor clearColor]];
+        [nameTextField setBackgroundColor:[UIColor clearColor]];
+    }
+    
+    if (indexPath.row == 1) {
+        
+        //背板
+        UIView *tempBackgroundView = [[UIView alloc] init];
+        tempBackgroundView.frame = CGRectMake(SPACE20_WITH_BORDER, 0, [UIScreen mainScreen].bounds.size.width - 2*SPACE20_WITH_BORDER, 44);
+        
+        
+        //标题
+        //        UILabel *leftTitleLabel = [[UILabel alloc] init];
+        //        leftTitleLabel.userInteractionEnabled = NO;
+        //        leftTitleLabel.textAlignment = NSTextAlignmentLeft;
+        //        leftTitleLabel.frame = CGRectMake(0, 0, 80, 44);
+        //        [leftTitleLabel setBackgroundColor:[UIColor redColor]];
+        //        [leftTitleLabel setText:@"手机号码"];
+        
+        //手机图片
+        UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(0, (cell.contentView.frame.size.height - 20)/2, 0, 20)];//w==20
+        [imageView setImage:[UIImage imageNamed:@"nikeName.png"]];
+        
+        
+        //输入框
+        identityTextField.frame = CGRectMake(imageView.frame.size.width + SPACE10_WITH_BORDER, 0, tempBackgroundView.bounds.size.width - (imageView.frame.size.width + SPACE10_WITH_BORDER), 44);
+        
+        [identityTextField setKeyboardType:UIKeyboardTypeNumbersAndPunctuation];
+        identityTextField.textAlignment = NSTextAlignmentLeft;
+        [identityTextField setPlaceholder:@"请输入您的身份证号码"];
+        [identityTextField setBackgroundColor:[UIColor whiteColor]];
+        identityTextField.delegate = self;
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(checkButtonStatus:)
+                                                     name:UITextFieldTextDidChangeNotification
+                                                   object:identityTextField];
+        
+        
+        
+        UILabel *lineLabel = [[UILabel alloc]initWithFrame:CGRectMake(-5, tempBackgroundView.frame.size.height-1, tempBackgroundView.frame.size.width+10, 0.5)];
+        [lineLabel setBackgroundColor:[UIColor lightGrayColor]];
+        
+        
+        [tempBackgroundView addSubview:imageView];
+        [tempBackgroundView addSubview:identityTextField];
+        [tempBackgroundView addSubview:lineLabel];
+        [cell.contentView addSubview:tempBackgroundView];
+        
+        
+        [tempBackgroundView setBackgroundColor:[UIColor clearColor]];
+        [imageView setBackgroundColor:[UIColor clearColor]];
+        [identityTextField setBackgroundColor:[UIColor clearColor]];
+    }
+    return cell;
+}
+
+
+#pragma mark UITextField delegate ------------------------------
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField;        // return NO to disallow editing.
+{
+    CLog(@"ShouldBegin ===  %@", textField.text);
+    return YES;
+}
+- (void)textFieldDidBeginEditing:(UITextField *)textField;           // became first responder
+{
+    CLog(@"DidBegin ===  %@", textField.text);
+}
+- (BOOL)textFieldShouldEndEditing:(UITextField *)textField
+{
+    CLog(@"ShouldEnd ===  %@", textField.text);
+    return YES;
+}
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    CLog(@"DidEnd ===  %@", textField.text);
+}
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+    NSMutableString *tempString = [NSMutableString stringWithString: textField.text];
+    
+    if([string isEqualToString:@""] && range.location != 0)
+    {
+        [tempString deleteCharactersInRange:NSMakeRange(range.location, 1)];
+    }
+    else if ([string isEqualToString:@""] && range.location == 0)
+    {
+        if ([textField.text length] > 0)
+        {
+            [tempString deleteCharactersInRange:NSMakeRange(0, 1)];
+        }
+    }
+    else
+    {
+        [tempString insertString:string atIndex:range.location];
+    }
+    
+    currentString = tempString;
+    
+    return YES;
+}
+
+#pragma mark --------------- 点击空白处隐藏键盘---------------------
+-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [nameTextField resignFirstResponder];
+    [identityTextField resignFirstResponder];
+}
+
+#pragma mark --------------- UIAlertView delegate ---------------
+
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+//    if(10001 == alertView.tag)
+//    {
+//        switch (buttonIndex) {
+//            case 0:
+//            {
+//                [self.navigationController popViewControllerAnimated:YES];
+//            }
+//                break;
+//            default:
+//                break;
+//        }
+//    }
+    
+    if(10002 == alertView.tag)
+    {
+        switch (buttonIndex) {
+            case 0:
+            {
+                CLog(@"好的");
+            }
+                break;
+                
+            default:
+                break;
+        }
+    }
+    
+    if(10003 == alertView.tag)
+    {
+        switch (buttonIndex) {
+            case 0:
+            {
+                CLog(@"好的");
+                [self.navigationController popViewControllerAnimated:YES];
+            }
+                break;
+                
+            default:
+                break;
+        }
+    }
+    
+    
+}
+@end
